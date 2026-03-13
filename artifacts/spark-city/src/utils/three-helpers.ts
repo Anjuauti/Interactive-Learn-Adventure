@@ -3,8 +3,8 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
 export function initBasicScene(container: HTMLDivElement) {
   const scene = new THREE.Scene();
-  // Optional subtle fog for depth
-  scene.fog = new THREE.FogExp2(0x050b14, 0.02);
+  scene.background = new THREE.Color(0xf8fafc);
+  scene.fog = new THREE.FogExp2(0xf8fafc, 0.015);
 
   const camera = new THREE.PerspectiveCamera(
     60,
@@ -18,7 +18,7 @@ export function initBasicScene(container: HTMLDivElement) {
   renderer.setSize(container.clientWidth, container.clientHeight);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // optimize
   renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.shadowMap.type = THREE.PCFShadowMap;
   
   container.appendChild(renderer.domElement);
 
@@ -28,10 +28,10 @@ export function initBasicScene(container: HTMLDivElement) {
   controls.maxPolarAngle = Math.PI / 2 - 0.1; // Don't go below ground
 
   // Lighting
-  const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+  const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
   scene.add(ambientLight);
 
-  const dirLight = new THREE.DirectionalLight(0xffffff, 1);
+  const dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
   dirLight.position.set(20, 40, 20);
   dirLight.castShadow = true;
   dirLight.shadow.mapSize.width = 2048;
@@ -39,7 +39,7 @@ export function initBasicScene(container: HTMLDivElement) {
   scene.add(dirLight);
 
   // Helper grid for alignment
-  const gridHelper = new THREE.GridHelper(50, 50, 0x112240, 0x112240);
+  const gridHelper = new THREE.GridHelper(50, 50, 0xcbd5e1, 0xe2e8f0);
   gridHelper.position.y = -0.1;
   scene.add(gridHelper);
 

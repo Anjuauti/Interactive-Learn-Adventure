@@ -5,7 +5,7 @@ import { Star, Zap, ChevronRight } from 'lucide-react';
 
 const LEVEL_NAMES = [
   "", 
-  "Hydroelectric Dam", 
+  "Hydroelectric", 
   "Generator", 
   "Transmission", 
   "Substation", 
@@ -14,15 +14,15 @@ const LEVEL_NAMES = [
   "Consumption"
 ];
 
-const LEVEL_GRADIENTS = [
+const LEVEL_COLORS = [
   "",
-  "from-blue-500 to-cyan-400",
-  "from-yellow-400 to-orange-500",
-  "from-purple-500 to-pink-500",
-  "from-green-500 to-teal-400",
-  "from-indigo-500 to-purple-500",
-  "from-red-500 to-orange-500",
-  "from-cyan-500 to-blue-600"
+  "bg-cyan-500",
+  "bg-blue-500",
+  "bg-purple-500",
+  "bg-orange-500",
+  "bg-green-500",
+  "bg-red-500",
+  "bg-yellow-500"
 ];
 
 export const GameHUD = () => {
@@ -34,45 +34,45 @@ export const GameHUD = () => {
 
   return (
     <div className="absolute top-0 left-0 w-full z-40 pointer-events-none">
-      <div className="w-full bg-slate-900/60 backdrop-blur-xl border-b-2 border-cyan-400/50 shadow-[0_0_20px_rgba(0,255,255,0.3)] p-4 flex justify-between items-center">
+      <div className="w-full bg-white border-b-2 border-slate-200 shadow-sm p-4 flex justify-between items-center">
         <div className="flex items-center gap-4">
-          <div className={`bg-gradient-to-r ${LEVEL_GRADIENTS[currentLevel] || 'from-slate-500 to-slate-400'} text-white px-5 py-2 rounded-xl font-display text-xl font-bold shadow-lg border border-white/20`}>
+          <div className={`${LEVEL_COLORS[currentLevel] || 'bg-slate-500'} text-white px-4 py-1 rounded-full font-display text-xl font-bold shadow-sm border border-white/20`}>
             Level {currentLevel}: {LEVEL_NAMES[currentLevel]}
           </div>
         </div>
 
         <div className="flex items-center gap-8">
-          <div className="flex items-center gap-3 text-yellow-400 font-display text-3xl font-bold drop-shadow-[0_0_10px_rgba(255,204,0,0.8)]">
-            <Zap className="w-8 h-8 fill-yellow-400 animate-pulse" />
+          <div className="flex items-center gap-2 text-slate-800 font-display text-2xl font-bold">
+            <Zap className="w-7 h-7 text-yellow-500 fill-yellow-500 animate-pulse" />
             <motion.span
               key={score}
-              initial={{ scale: 1.5, color: '#fff' }}
-              animate={{ scale: 1, color: '#facc15' }}
+              initial={{ scale: 1.5, color: '#f59e0b' }}
+              animate={{ scale: 1, color: '#1e293b' }}
             >
               {score} pts
             </motion.span>
           </div>
 
-          <div className="bg-slate-800/80 px-4 py-2 rounded-2xl flex gap-2 border border-slate-600/50">
+          <div className="bg-slate-50 px-4 py-2 rounded-2xl flex gap-2 border border-slate-200">
             {[1, 2, 3].map((starIndex) => (
               <Star 
                 key={starIndex} 
-                className={`w-8 h-8 transition-all duration-500 ${
+                className={`w-7 h-7 transition-all duration-500 ${
                   stars >= starIndex 
-                    ? 'fill-yellow-400 text-yellow-400 drop-shadow-[0_0_15px_rgba(255,204,0,1)] scale-110' 
-                    : 'text-slate-600 fill-slate-800'
+                    ? 'fill-yellow-500 text-yellow-500 scale-110 drop-shadow-sm' 
+                    : 'text-slate-300 fill-slate-200'
                 }`} 
               />
             ))}
           </div>
         </div>
       </div>
-      <div className="w-full h-1.5 bg-slate-800">
+      <div className="w-full h-1.5 bg-slate-100">
         <div 
-          className="h-full bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 transition-all duration-1000 shadow-[0_0_10px_rgba(0,255,255,0.8)] relative"
+          className="h-full bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 transition-all duration-1000 relative"
           style={{ width: `${progress}%` }}
         >
-          <div className="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full shadow-[0_0_10px_#fff]" />
+          <div className="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full shadow-sm" />
         </div>
       </div>
     </div>
@@ -89,7 +89,7 @@ export const VoltGuide = () => {
       <motion.div 
         initial={{ y: 50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        className="w-40 h-40 shrink-0 relative drop-shadow-2xl"
+        className="w-24 h-24 shrink-0 relative drop-shadow-lg"
       >
         <img 
           src={`${import.meta.env.BASE_URL}images/volt-robot.png`} 
@@ -104,12 +104,10 @@ export const VoltGuide = () => {
           initial={{ opacity: 0, scale: 0.8, x: -20 }}
           animate={{ opacity: 1, scale: 1, x: 0 }}
           exit={{ opacity: 0, scale: 0.8, x: -20 }}
-          className="relative bg-white/95 backdrop-blur-md p-6 rounded-3xl rounded-bl-none border-4 border-cyan-400 shadow-[0_0_30px_rgba(0,255,255,0.4)] mb-8"
+          className="relative bg-white p-4 rounded-2xl rounded-bl-none shadow-lg border-l-4 border-l-blue-500 mb-4"
         >
-          <div className="absolute top-0 left-0 w-2 h-full bg-gradient-to-b from-cyan-400 to-blue-500 rounded-l-2xl" />
-          <div className="absolute -left-5 bottom-0 w-0 h-0 border-t-[20px] border-t-transparent border-r-[24px] border-r-cyan-400 border-b-[0px] border-b-transparent" />
-          <div className="absolute -left-4 bottom-1 w-0 h-0 border-t-[16px] border-t-transparent border-r-[20px] border-r-white border-b-[0px] border-b-transparent z-10" />
-          <p className="text-xl font-display text-slate-800 leading-relaxed font-bold pl-2">{voltMessage}</p>
+          <div className="absolute -left-4 bottom-0 w-0 h-0 border-t-[16px] border-t-transparent border-r-[16px] border-r-white border-b-[0px] border-b-transparent z-10" />
+          <p className="text-lg font-medium text-slate-800 leading-relaxed">{voltMessage}</p>
         </motion.div>
       </AnimatePresence>
     </div>
@@ -126,27 +124,21 @@ export const NextLevelButton = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="absolute inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center pointer-events-auto"
+          className="absolute inset-0 bg-slate-900/20 backdrop-blur-sm z-50 flex items-center justify-center pointer-events-auto"
         >
-          <div className="relative">
-            <motion.div 
-              animate={{ scale: [1, 1.2, 1], opacity: [0.5, 0, 0.5] }}
-              transition={{ repeat: Infinity, duration: 1.5 }}
-              className="absolute inset-0 rounded-full bg-orange-500 blur-xl"
-            />
-            <motion.button
-              initial={{ scale: 0.5, y: 50 }}
-              animate={{ scale: 1, y: 0 }}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={nextLevel}
-              className="relative px-14 py-6 bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 text-white font-display font-bold text-4xl rounded-full shadow-[0_0_40px_rgba(255,165,0,0.8)] flex items-center gap-4 border-4 border-yellow-200 overflow-hidden group"
-            >
-              <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
-              <span className="relative z-10 drop-shadow-md">NEXT LEVEL</span>
-              <ChevronRight className="w-10 h-10 relative z-10 animate-bounce" style={{ animationDirection: 'horizontal' }} />
-            </motion.button>
-          </div>
+          <motion.button
+            initial={{ scale: 0.5, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ type: "spring", bounce: 0.5 }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={nextLevel}
+            className="relative px-14 py-5 bg-gradient-to-r from-green-400 to-emerald-500 text-white font-display font-bold text-3xl rounded-2xl shadow-xl flex items-center gap-4 overflow-hidden group"
+          >
+            <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+            <span className="relative z-10">NEXT LEVEL</span>
+            <ChevronRight className="w-10 h-10 relative z-10 animate-bounce" style={{ animationDirection: 'horizontal' }} />
+          </motion.button>
         </motion.div>
       )}
     </AnimatePresence>
@@ -157,7 +149,7 @@ export const InfoCard = ({ title, icon, colorClass = "from-blue-500 to-cyan-400"
   <div className={`card-bright pointer-events-auto flex flex-col border-2 ${borderColor}`}>
     <div className={`bg-gradient-to-r ${colorClass} px-5 py-3 flex items-center gap-3`}>
       {icon && <span className="text-2xl">{icon}</span>}
-      <h3 className="text-xl font-display text-white font-bold drop-shadow-md">
+      <h3 className="text-xl font-display text-white font-bold drop-shadow-sm">
         {title}
       </h3>
     </div>

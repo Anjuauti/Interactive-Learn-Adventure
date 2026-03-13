@@ -7,26 +7,18 @@
 
   --color-background: hsl(var(--background));
   --color-foreground: hsl(var(--foreground));
-  
-  --color-neon-cyan: hsl(180, 100%, 50%);
-  --color-neon-yellow: hsl(50, 100%, 50%);
-  --color-neon-green: hsl(120, 100%, 50%);
-  --color-neon-pink: hsl(300, 100%, 60%);
-  
-  --color-game-panel: rgba(15, 23, 42, 0.8);
 }
 
 :root {
-  --background: 222 47% 7%;
-  --foreground: 210 40% 98%;
+  --background: 210 40% 98%;
+  --foreground: 222 47% 7%;
   --border: 214 32% 91%;
 }
 
 @layer base {
   body {
     @apply bg-background text-foreground font-sans overflow-hidden select-none;
-    background-color: #050b14;
-    background-image: radial-gradient(circle at 50% 50%, #112240 0%, #050b14 100%);
+    background-color: #f8fafc;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -36,16 +28,6 @@
 }
 
 /* Custom Game Animations */
-@keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 10px var(--color-neon-cyan), 0 0 20px var(--color-neon-cyan); }
-  50% { box-shadow: 0 0 25px var(--color-neon-cyan), 0 0 40px var(--color-neon-cyan); }
-}
-
-@keyframes pulse-glow-yellow {
-  0%, 100% { box-shadow: 0 0 10px var(--color-neon-yellow), 0 0 20px var(--color-neon-yellow); }
-  50% { box-shadow: 0 0 25px var(--color-neon-yellow), 0 0 40px var(--color-neon-yellow); }
-}
-
 @keyframes float { 
   0%,100%{transform:translateY(0)} 
   50%{transform:translateY(-10px)} 
@@ -62,54 +44,38 @@
   100%{stroke-dashoffset:0} 
 }
 
-@keyframes glow-pulse { 
-  0%,100%{text-shadow:0 0 10px #00ffff,0 0 20px #00ffff} 
-  50%{text-shadow:0 0 25px #00ffff,0 0 50px #00ffff,0 0 100px #00ffff} 
-}
-
-@keyframes glow-pulse-yellow { 
-  0%,100%{text-shadow:0 0 10px #ffcc00,0 0 20px #ffcc00} 
-  50%{text-shadow:0 0 25px #ffcc00,0 0 50px #ffcc00,0 0 100px #ffcc00} 
+@keyframes bounce-in {
+  0% { transform: scale(0.5); opacity: 0; }
+  70% { transform: scale(1.1); }
+  100% { transform: scale(1); opacity: 1; }
 }
 
 .animate-float { animation: float 3s ease-in-out infinite; }
 .animate-spark { animation: spark 1.5s ease-in-out infinite; }
-.text-glow-cyan { animation: glow-pulse 2s ease-in-out infinite; }
-.text-glow-yellow { animation: glow-pulse-yellow 2s ease-in-out infinite; }
-
-.glow-cyan {
-  animation: pulse-glow 2s infinite;
-}
-
-.glow-yellow {
-  animation: pulse-glow-yellow 2s infinite;
-}
+.animate-bounce-in { animation: bounce-in 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
 
 .glass-panel {
-  background: var(--color-game-panel);
-  backdrop-filter: blur(12px);
-  border: 2px solid rgba(0, 255, 255, 0.5);
-  box-shadow: 0 8px 32px rgba(0, 255, 255, 0.1);
+  @apply bg-white shadow-lg border border-slate-200 rounded-2xl;
+}
+
+.card-panel {
+  @apply bg-white shadow-md border-2 border-slate-100 rounded-2xl;
 }
 
 .card-bright {
-  background: white;
-  border-radius: 1rem;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2), 0 0 15px rgba(0, 255, 255, 0.2);
-  color: #1e293b;
-  overflow: hidden;
+  @apply bg-white shadow-md border-2 rounded-2xl overflow-hidden text-slate-800;
 }
 
 /* Range Slider Styling */
 input[type=range] {
   -webkit-appearance: none;
   @apply w-full h-4 rounded-full outline-none;
-  background: linear-gradient(to right, #00ffff 0%, #ffcc00 100%);
-  border: 1px solid rgba(255,255,255,0.2);
+  background: #e2e8f0; /* light gray track */
+  border: 1px solid #cbd5e1;
 }
 input[type=range]::-webkit-slider-thumb {
   -webkit-appearance: none;
-  @apply w-8 h-8 rounded-full bg-yellow-400 cursor-pointer shadow-[0_0_15px_rgba(255,204,0,0.8)] border-2 border-white;
+  @apply w-8 h-8 rounded-full bg-yellow-400 cursor-pointer shadow-md border-2 border-white;
   transition: transform 0.1s;
 }
 input[type=range]::-webkit-slider-thumb:hover {

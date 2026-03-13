@@ -179,9 +179,9 @@ export const Level1Dam = () => {
           <p>The spinning turbine turns a <strong className="text-yellow-600">Generator</strong> to create electricity!</p>
         </InfoCard>
 
-        <div className="glass-panel p-0 rounded-2xl pointer-events-auto overflow-hidden">
-          <div className="bg-gradient-to-r from-slate-800 to-slate-700 px-5 py-3 border-b border-white/10">
-            <h3 className="text-xl font-display text-white font-bold">Control Gate</h3>
+        <div className="bg-white rounded-2xl shadow-md border border-slate-200 pointer-events-auto overflow-hidden">
+          <div className="bg-slate-100 px-5 py-3 border-b border-slate-200">
+            <h3 className="text-xl font-display text-slate-800 font-bold">Control Gate</h3>
           </div>
           <div className="p-5">
             <input 
@@ -192,16 +192,16 @@ export const Level1Dam = () => {
               className="mb-4"
             />
             
-            <div className="h-6 w-full rounded-full flex overflow-hidden border border-white/20 mb-2">
-              <div className="h-full bg-red-500 w-[49%]" />
-              <div className="h-full bg-green-500 w-[26%]" />
-              <div className="h-full bg-red-500 w-[25%]" />
+            <div className="flex w-full h-2 rounded-full overflow-hidden mb-2">
+              <div className="bg-red-400" style={{ width: '40%' }} />
+              <div className="bg-green-400" style={{ width: '25%' }} />
+              <div className="bg-red-400" style={{ width: '35%' }} />
             </div>
 
-            <div className="flex justify-between text-slate-300 text-sm font-bold px-1">
-              <span className={waterFlow < 50 ? "text-red-400 drop-shadow-md" : ""}>Too Low</span>
-              <span className={waterFlow >= 50 && waterFlow <= 75 ? "text-green-400 drop-shadow-md text-base" : ""}>Optimal Zone</span>
-              <span className={waterFlow > 75 ? "text-red-400 drop-shadow-md" : ""}>Danger!</span>
+            <div className="flex justify-between text-sm font-bold mt-1">
+              <span className="text-red-400 w-[40%] text-left">Too Low</span>
+              <span className="text-green-500 w-[25%] text-center">Optimal</span>
+              <span className="text-red-400 w-[35%] text-right">Too High</span>
             </div>
           </div>
         </div>
