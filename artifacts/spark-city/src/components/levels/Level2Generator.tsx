@@ -56,14 +56,12 @@ export const Level2Generator = () => {
       frameId = requestAnimationFrame(animate);
       controls.update();
 
-      // Read current speed from closure window var (hacky but stable for ThreeJS loops interacting with React)
       const currentSpeed = (window as any).generatorSpeed || 0;
       
       if (rotorRef.current) {
         rotorRef.current.rotation.z -= currentSpeed * 0.1;
       }
       
-      // Update glow based on speed
       centerGlow.scale.setScalar(1 + currentSpeed * 0.2);
       glowMat.opacity = Math.min(1, currentSpeed * 0.1);
       
@@ -77,7 +75,6 @@ export const Level2Generator = () => {
     };
   }, []);
 
-  // Handle spin speed logic
   useEffect(() => {
     (window as any).generatorSpeed = spinSpeed;
 
@@ -90,7 +87,6 @@ export const Level2Generator = () => {
       }
     }
 
-    // Natural decay of speed
     const interval = setInterval(() => {
       setSpinSpeed(s => Math.max(0, s - 0.5));
     }, 100);
@@ -102,32 +98,40 @@ export const Level2Generator = () => {
     <div className="w-full h-screen relative">
       <div ref={containerRef} className="absolute inset-0 z-0" />
       
-      <div className="absolute right-8 top-24 z-10 flex flex-col gap-6">
-        <InfoCard title="Electromagnetic Induction">
-          <p>When a <strong>Magnet</strong> rotates inside coils of copper wire, it pushes electrons around.</p>
-          <p>This flow of electrons is called <strong>Alternating Current (AC)</strong> electricity!</p>
+      <div className="absolute right-8 top-32 z-10 flex flex-col gap-6 w-[22rem]">
+        <InfoCard 
+          title="Electromagnetic Induction" 
+          icon="🧲" 
+          colorClass="from-red-500 to-blue-500"
+          borderColor="border-purple-400"
+        >
+          <p>When a <strong className="text-purple-600">Magnet</strong> rotates inside coils of copper wire, it pushes electrons around.</p>
+          <p>This flow of electrons is called <strong className="text-blue-600">Alternating Current (AC)</strong> electricity!</p>
         </InfoCard>
 
-        <div className="glass-panel p-6 rounded-2xl text-center pointer-events-auto">
-          <h3 className="text-xl font-display text-white mb-4">Rotor Speed</h3>
-          
-          {/* Waveform Visualization based on speed */}
-          <svg className="w-full h-20 mb-4 bg-slate-900 rounded-lg" viewBox="0 0 200 50">
-            <path 
-              d={`M 0 25 Q 25 ${25 - spinSpeed*3} 50 25 T 100 25 T 150 25 T 200 25`} 
-              fill="transparent" 
-              stroke="#00ffff" 
-              strokeWidth="3"
-              className="glow-cyan"
-            />
-          </svg>
+        <div className="glass-panel p-0 rounded-2xl text-center pointer-events-auto overflow-hidden">
+          <div className="bg-gradient-to-r from-slate-800 to-slate-700 px-5 py-3 border-b border-white/10">
+            <h3 className="text-xl font-display text-white font-bold">Rotor Speed</h3>
+          </div>
+          <div className="p-5">
+            {/* Waveform Visualization based on speed */}
+            <svg className="w-full h-24 mb-6 bg-slate-900/80 rounded-xl border border-cyan-500/30" viewBox="0 0 200 50">
+              <path 
+                d={`M 0 25 Q 25 ${25 - spinSpeed*3} 50 25 T 100 25 T 150 25 T 200 25`} 
+                fill="transparent" 
+                stroke="#00ffff" 
+                strokeWidth="3"
+                className="glow-cyan"
+              />
+            </svg>
 
-          <button 
-            onClick={() => setSpinSpeed(s => Math.min(15, s + 2))}
-            className="w-full py-4 bg-cyan-500 hover:bg-cyan-400 text-slate-900 font-display font-bold text-2xl rounded-xl shadow-[0_0_15px_rgba(0,255,255,0.6)] active:scale-95 transition-transform"
-          >
-            SPIN ROTOR
-          </button>
+            <button 
+              onClick={() => setSpinSpeed(s => Math.min(15, s + 2))}
+              className="w-full py-5 bg-gradient-to-r from-cyan-400 to-blue-500 hover:from-cyan-300 hover:to-blue-400 text-white font-display font-bold text-2xl rounded-xl shadow-[0_0_20px_rgba(0,255,255,0.6)] active:scale-95 transition-transform border-2 border-cyan-200"
+            >
+              SPIN ROTOR ⚡
+            </button>
+          </div>
         </div>
       </div>
     </div>

@@ -5,9 +5,9 @@ import { useGameStore } from '../../store/game-store';
 import { InfoCard } from '../GameUI';
 
 const APPLIANCES = [
-  { id: 'light', name: 'LED Light', color: 0xffffff, placed: false },
-  { id: 'fan', name: 'Ceiling Fan', color: 0x88ccff, placed: false },
-  { id: 'tv', name: 'Television', color: 0x222222, placed: false },
+  { id: 'light', name: 'LED Light', color: 0xffffff, placed: false, bgClass: 'bg-yellow-100 border-yellow-300 text-yellow-800' },
+  { id: 'fan', name: 'Ceiling Fan', color: 0x88ccff, placed: false, bgClass: 'bg-blue-100 border-blue-300 text-blue-800' },
+  { id: 'tv', name: 'Television', color: 0x222222, placed: false, bgClass: 'bg-purple-100 border-purple-300 text-purple-800' },
 ];
 
 export const Level6Wiring = () => {
@@ -133,30 +133,37 @@ export const Level6Wiring = () => {
     <div className="w-full h-screen relative">
       <div ref={containerRef} className={`absolute inset-0 z-0 ${selectedTool ? 'cursor-crosshair' : 'cursor-default'}`} />
       
-      <div className="absolute right-8 top-24 z-10 flex flex-col gap-6 pointer-events-auto">
-        <InfoCard title="Parallel Circuits">
-          <p>Homes are wired in <strong>Parallel</strong>. This means each appliance gets its own direct path to the power source.</p>
+      <div className="absolute right-8 top-32 z-10 flex flex-col gap-6 pointer-events-auto w-[22rem]">
+        <InfoCard 
+          title="Parallel Circuits" 
+          icon="🔌"
+          colorClass="from-red-500 to-orange-500"
+          borderColor="border-red-400"
+        >
+          <p>Homes are wired in <strong className="text-red-600">Parallel</strong>. This means each appliance gets its own direct path to the power source.</p>
           <p>If one light burns out, the rest of the house stays on!</p>
         </InfoCard>
 
-        <div className="glass-panel p-6 rounded-2xl w-64">
-          <h3 className="text-xl font-display text-white mb-4">Toolbox</h3>
-          <div className="flex flex-col gap-3">
+        <div className="glass-panel p-0 rounded-2xl overflow-hidden">
+          <div className="bg-gradient-to-r from-slate-800 to-slate-700 px-5 py-3 border-b border-white/10">
+            <h3 className="text-xl font-display text-white font-bold">Toolbox</h3>
+          </div>
+          <div className="p-5 flex flex-col gap-3">
             {APPLIANCES.map(app => (
               <button
                 key={app.id}
                 disabled={placedItems.includes(app.id)}
                 onClick={() => setSelectedTool(app.id)}
-                className={`py-3 px-4 rounded-xl font-bold flex justify-between items-center transition-all ${
+                className={`py-3 px-4 rounded-xl font-bold flex justify-between items-center transition-all border-2 ${
                   placedItems.includes(app.id) 
-                    ? 'bg-slate-700 text-slate-500 opacity-50' 
+                    ? 'bg-slate-800 border-slate-700 text-slate-500 opacity-50' 
                     : selectedTool === app.id 
-                      ? 'bg-yellow-400 text-slate-900 scale-105 shadow-lg' 
-                      : 'bg-slate-800 text-white hover:bg-slate-700'
+                      ? 'bg-yellow-400 border-white text-slate-900 scale-105 shadow-[0_0_15px_rgba(255,204,0,0.8)]' 
+                      : `${app.bgClass} hover:opacity-80`
                 }`}
               >
                 {app.name}
-                {placedItems.includes(app.id) && <span className="text-green-400">✓</span>}
+                {placedItems.includes(app.id) && <span className="text-green-500 text-xl drop-shadow-md">✓</span>}
               </button>
             ))}
           </div>

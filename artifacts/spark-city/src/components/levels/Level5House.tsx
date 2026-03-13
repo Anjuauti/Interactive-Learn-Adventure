@@ -95,21 +95,46 @@ export const Level5House = () => {
     <div className="w-full h-screen relative">
       <div ref={containerRef} className="absolute inset-0 z-0" />
       
-      <div className="absolute right-8 top-24 z-10 flex flex-col gap-6 pointer-events-auto">
-        <InfoCard title="House Entry">
+      <div className="absolute right-8 top-32 z-10 flex flex-col gap-6 pointer-events-auto w-[22rem]">
+        <InfoCard 
+          title="House Entry" 
+          icon="🏠"
+          colorClass="from-indigo-500 to-purple-500"
+          borderColor="border-purple-400"
+        >
           <p>Power enters safely through a sequence of protective devices.</p>
-          <p><strong>Meter:</strong> Tracks usage for billing.</p>
-          <p><strong>MCB:</strong> Automatically trips (turns off) if too much current flows, preventing fires.</p>
+          <p><strong className="text-purple-600">Meter:</strong> Tracks usage for billing.</p>
+          <p><strong className="text-indigo-600">MCB:</strong> Automatically trips (turns off) if too much current flows, preventing fires.</p>
         </InfoCard>
 
-        {step < 4 && (
-          <button 
-            onClick={() => setStep(s => s + 1)}
-            className="w-full py-4 bg-yellow-400 hover:bg-yellow-300 text-slate-900 font-display font-bold text-2xl rounded-xl shadow-[0_0_15px_rgba(255,204,0,0.6)] active:scale-95 transition-transform"
-          >
-            NEXT STEP
-          </button>
-        )}
+        <div className="glass-panel p-0 rounded-2xl overflow-hidden">
+          <div className="bg-gradient-to-r from-slate-800 to-slate-700 px-5 py-3 border-b border-white/10">
+            <h3 className="text-xl font-display text-white font-bold">Flow Sequence</h3>
+          </div>
+          <div className="p-5">
+            <div className="flex justify-between mb-6">
+              {[0, 1, 2, 3, 4].map(i => (
+                <div key={i} className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${i <= step ? 'bg-yellow-400 text-slate-900 shadow-[0_0_10px_rgba(255,204,0,0.8)]' : 'bg-slate-700 text-slate-500'}`}>
+                  {i+1}
+                </div>
+              ))}
+            </div>
+
+            {step < 4 && (
+              <button 
+                onClick={() => setStep(s => s + 1)}
+                className="w-full py-4 bg-gradient-to-r from-yellow-400 to-orange-400 hover:from-yellow-300 hover:to-orange-300 text-slate-900 font-display font-bold text-2xl rounded-xl shadow-[0_0_15px_rgba(255,204,0,0.6)] active:scale-95 transition-transform"
+              >
+                NEXT STEP ➡
+              </button>
+            )}
+            {step === 4 && (
+              <div className="text-center py-3 bg-green-500/20 text-green-400 font-bold rounded-xl border border-green-500/50">
+                Sequence Complete!
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );

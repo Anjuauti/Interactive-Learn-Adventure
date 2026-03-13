@@ -97,24 +97,47 @@ export const Level4Substation = () => {
     <div className="w-full h-screen relative">
       <div ref={containerRef} className="absolute inset-0 z-0" />
       
-      <div className="absolute right-8 top-24 z-10 flex flex-col gap-6">
-        <InfoCard title="Step-Down Substation">
+      <div className="absolute right-8 top-32 z-10 flex flex-col gap-6 w-[22rem]">
+        <InfoCard 
+          title="Step-Down Substation" 
+          icon="🏭"
+          colorClass="from-green-500 to-teal-400"
+          borderColor="border-green-400"
+        >
           <p>High voltage is great for travel, but dangerous for homes.</p>
-          <p>A <strong>Step-Down Transformer</strong> lowers the voltage significantly before it enters residential areas.</p>
+          <p>A <strong className="text-teal-600">Step-Down Transformer</strong> lowers the voltage significantly before it enters residential areas.</p>
         </InfoCard>
 
-        <div className="glass-panel p-6 rounded-2xl text-center pointer-events-auto">
-          <h3 className="text-xl font-display text-white mb-4">Voltage Dial (kV)</h3>
-          <h2 className={`text-4xl font-display mb-4 ${voltage >= 10 && voltage <= 15 ? 'text-green-400' : 'text-red-400'}`}>
-            {voltage} kV
-          </h2>
-          <input 
-            type="range" 
-            min="1" max="33" 
-            value={voltage}
-            onChange={(e) => setVoltage(parseInt(e.target.value))}
-            className="mb-4"
-          />
+        <div className="glass-panel p-0 rounded-2xl text-center pointer-events-auto overflow-hidden">
+          <div className="bg-gradient-to-r from-slate-800 to-slate-700 px-5 py-3 border-b border-white/10">
+            <h3 className="text-xl font-display text-white font-bold">Voltage Dial (kV)</h3>
+          </div>
+          <div className="p-6">
+            <div className={`w-32 h-32 mx-auto rounded-full flex items-center justify-center mb-6 border-4 shadow-inner bg-slate-900 ${
+              voltage >= 10 && voltage <= 15 
+                ? 'border-green-400 shadow-[0_0_20px_rgba(0,255,0,0.4)]' 
+                : voltage > 15 
+                  ? 'border-red-500 shadow-[0_0_20px_rgba(255,0,0,0.4)]' 
+                  : 'border-slate-500'
+            }`}>
+              <h2 className={`text-4xl font-display font-bold ${voltage >= 10 && voltage <= 15 ? 'text-green-400 text-glow-cyan' : voltage > 15 ? 'text-red-500' : 'text-slate-400'}`}>
+                {voltage}
+              </h2>
+            </div>
+            
+            <input 
+              type="range" 
+              min="1" max="33" 
+              value={voltage}
+              onChange={(e) => setVoltage(parseInt(e.target.value))}
+              className="mb-2"
+            />
+            <div className="flex justify-between text-slate-400 text-xs font-bold px-1">
+              <span>Low</span>
+              <span className="text-green-400">11kV Target</span>
+              <span>High</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>

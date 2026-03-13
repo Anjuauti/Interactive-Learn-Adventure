@@ -41,8 +41,8 @@ export const Level3Transmission = () => {
       tower.add(crossbar);
 
       // Connection Nodes
-      const nodeGeo = new THREE.SphereGeometry(1, 16, 16);
-      const nodeMat = new THREE.MeshStandardMaterial({ color: 0x00ffff, emissive: 0x00ffff, emissiveIntensity: 0.5 });
+      const nodeGeo = new THREE.SphereGeometry(1.2, 16, 16);
+      const nodeMat = new THREE.MeshStandardMaterial({ color: 0x00ffff, emissive: 0x00ffff, emissiveIntensity: 0.8 });
       
       const leftNode = new THREE.Mesh(nodeGeo, nodeMat);
       leftNode.position.set(-5, 14.5, 0);
@@ -85,7 +85,7 @@ export const Level3Transmission = () => {
           selectedNode = clicked;
           (selectedNode.material as THREE.MeshStandardMaterial).emissiveIntensity = 2; // Highlight
         } else {
-          // Draw line between selectedNode and clicked
+          // Draw line
           if (selectedNode !== clicked) {
             const pos1 = new THREE.Vector3();
             selectedNode.getWorldPosition(pos1);
@@ -98,15 +98,15 @@ export const Level3Transmission = () => {
               pos2
             );
 
-            const tubeGeo = new THREE.TubeGeometry(curve, 20, 0.2, 8, false);
-            const tubeMat = new THREE.MeshStandardMaterial({ color: 0xffff00, emissive: 0x888800 });
+            const tubeGeo = new THREE.TubeGeometry(curve, 20, 0.3, 8, false);
+            const tubeMat = new THREE.MeshStandardMaterial({ color: 0xffff00, emissive: 0xddaa00 });
             const tube = new THREE.Mesh(tubeGeo, tubeMat);
             scene.add(tube);
 
             linesDrawn++;
             setConnections(linesDrawn);
 
-            (selectedNode.material as THREE.MeshStandardMaterial).emissiveIntensity = 0.5;
+            (selectedNode.material as THREE.MeshStandardMaterial).emissiveIntensity = 0.8;
             selectedNode = null;
           }
         }
@@ -137,7 +137,7 @@ export const Level3Transmission = () => {
       addScore(100);
       addStar();
     } else if (connections > 0) {
-      setVoltMessage(`Keep going! ${connections} lines connected.`);
+      setVoltMessage(`Keep going! ${connections}/4 lines connected.`);
     }
   }, [connections]);
 
@@ -145,12 +145,32 @@ export const Level3Transmission = () => {
     <div className="w-full h-screen relative">
       <div ref={containerRef} className="absolute inset-0 z-0 cursor-crosshair" />
       
-      <div className="absolute right-8 top-24 z-10 flex flex-col gap-6 pointer-events-none">
-        <InfoCard title="High Voltage Transmission">
+      <div className="absolute right-8 top-32 z-10 flex flex-col gap-6 pointer-events-none w-[22rem]">
+        <InfoCard 
+          title="High Voltage Transmission" 
+          icon="🗼"
+          colorClass="from-yellow-400 to-orange-500"
+          borderColor="border-yellow-400"
+        >
           <p>Electricity travels hundreds of miles.</p>
-          <p>We use a <strong>Step-Up Transformer</strong> to increase voltage very high (like 400kV).</p>
-          <p className="text-yellow-400 font-bold">High Voltage = Lower Current = Less Heat Loss!</p>
+          <p>We use a <strong className="text-orange-600">Step-Up Transformer</strong> to increase voltage very high (like 400kV).</p>
+          <div className="bg-yellow-100 p-3 rounded-xl border border-yellow-300 mt-2">
+            <p className="text-orange-600 font-bold text-center">High Voltage = Lower Current = Less Heat Loss!</p>
+          </div>
         </InfoCard>
+
+        <div className="glass-panel p-0 rounded-2xl overflow-hidden">
+          <div className="bg-gradient-to-r from-slate-800 to-slate-700 px-5 py-3 border-b border-white/10">
+            <h3 className="text-xl font-display text-white font-bold">Connections</h3>
+          </div>
+          <div className="p-5 flex justify-center gap-2">
+             {[1,2,3,4].map(i => (
+               <div key={i} className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-xl ${connections >= i ? 'bg-yellow-400 text-slate-900 shadow-[0_0_15px_rgba(255,204,0,0.8)]' : 'bg-slate-700 text-slate-500'}`}>
+                 {i}
+               </div>
+             ))}
+          </div>
+        </div>
       </div>
     </div>
   );

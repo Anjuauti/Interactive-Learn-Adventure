@@ -102,11 +102,6 @@ export const Level1Dam = () => {
     const animate = () => {
       frameId = requestAnimationFrame(animate);
       controls.update();
-
-      // We read from the DOM/React state via ref/closure, but better to use the state directly if possible
-      // Since it's in a useEffect, we need to be careful. We'll read from window.waterFlowSpeed (hacky but works for Vanilla Three)
-      // Actually, we'll update the turbine speed based on the flowRef.
-      
       renderer.render(scene, camera);
     };
     animate();
@@ -115,7 +110,7 @@ export const Level1Dam = () => {
       cancelAnimationFrame(frameId);
       cleanup();
     };
-  }, []); // Run once
+  }, []);
 
   // React to water flow changes
   useEffect(() => {
@@ -147,7 +142,6 @@ export const Level1Dam = () => {
     };
     animateTurbine();
 
-    // Game Logic Checks
     const checkTimer = setTimeout(() => {
       if (waterFlow >= 50 && waterFlow <= 75) {
         setVoltMessage("Perfect! The generator is producing AC electricity! Kinetic energy is converted into electrical energy.");
@@ -169,30 +163,46 @@ export const Level1Dam = () => {
     };
   }, [waterFlow, setVoltMessage, setLevelComplete, addScore, addStar]);
 
-
   return (
     <div className="w-full h-screen relative">
       <div ref={containerRef} className="absolute inset-0 z-0" />
       
-      <div className="absolute right-8 top-24 z-10 flex flex-col gap-6">
-        <InfoCard title="Hydroelectric Power">
-          <p>Water stored in a dam has <strong>Potential Energy</strong>.</p>
-          <p>When released, it turns into <strong>Kinetic Energy</strong>, spinning a turbine.</p>
-          <p>The spinning turbine turns a <strong>Generator</strong> to create electricity!</p>
+      <div className="absolute right-8 top-32 z-10 flex flex-col gap-6 w-[22rem]">
+        <InfoCard 
+          title="Hydroelectric Power" 
+          icon="🌊" 
+          colorClass="from-blue-500 to-cyan-400"
+          borderColor="border-blue-400"
+        >
+          <p>Water stored in a dam has <strong className="text-blue-600">Potential Energy</strong>.</p>
+          <p>When released, it turns into <strong className="text-blue-600">Kinetic Energy</strong>, spinning a turbine.</p>
+          <p>The spinning turbine turns a <strong className="text-yellow-600">Generator</strong> to create electricity!</p>
         </InfoCard>
 
-        <div className="glass-panel p-6 rounded-2xl w-80 pointer-events-auto">
-          <h3 className="text-xl font-display text-white mb-4">Control Gate</h3>
-          <input 
-            type="range" 
-            min="0" max="100" 
-            value={waterFlow}
-            onChange={(e) => setWaterFlow(parseInt(e.target.value))}
-          />
-          <div className="flex justify-between text-slate-400 mt-2 text-sm font-bold">
-            <span>Closed</span>
-            <span className={waterFlow >= 50 && waterFlow <= 75 ? "text-green-400" : ""}>Optimal</span>
-            <span className={waterFlow > 75 ? "text-red-400" : ""}>Danger</span>
+        <div className="glass-panel p-0 rounded-2xl pointer-events-auto overflow-hidden">
+          <div className="bg-gradient-to-r from-slate-800 to-slate-700 px-5 py-3 border-b border-white/10">
+            <h3 className="text-xl font-display text-white font-bold">Control Gate</h3>
+          </div>
+          <div className="p-5">
+            <input 
+              type="range" 
+              min="0" max="100" 
+              value={waterFlow}
+              onChange={(e) => setWaterFlow(parseInt(e.target.value))}
+              className="mb-4"
+            />
+            
+            <div className="h-6 w-full rounded-full flex overflow-hidden border border-white/20 mb-2">
+              <div className="h-full bg-red-500 w-[49%]" />
+              <div className="h-full bg-green-500 w-[26%]" />
+              <div className="h-full bg-red-500 w-[25%]" />
+            </div>
+
+            <div className="flex justify-between text-slate-300 text-sm font-bold px-1">
+              <span className={waterFlow < 50 ? "text-red-400 drop-shadow-md" : ""}>Too Low</span>
+              <span className={waterFlow >= 50 && waterFlow <= 75 ? "text-green-400 drop-shadow-md text-base" : ""}>Optimal Zone</span>
+              <span className={waterFlow > 75 ? "text-red-400 drop-shadow-md" : ""}>Danger!</span>
+            </div>
           </div>
         </div>
       </div>

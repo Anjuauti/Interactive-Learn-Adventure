@@ -7,10 +7,10 @@ import { Switch } from '../ui/switch';
 import { Label } from '../ui/label';
 
 const CONSUMERS = [
-  { id: 'light', name: 'LED Light', watts: 10 },
-  { id: 'fan', name: 'Ceiling Fan', watts: 70 },
-  { id: 'tv', name: 'Television', watts: 120 },
-  { id: 'fridge', name: 'Refrigerator', watts: 300 },
+  { id: 'light', name: 'LED Light', watts: 10, color: 'text-yellow-400', glow: 'shadow-[0_0_15px_rgba(255,204,0,0.6)]' },
+  { id: 'fan', name: 'Ceiling Fan', watts: 70, color: 'text-blue-400', glow: 'shadow-[0_0_15px_rgba(59,130,246,0.6)]' },
+  { id: 'tv', name: 'Television', watts: 120, color: 'text-purple-400', glow: 'shadow-[0_0_15px_rgba(168,85,247,0.6)]' },
+  { id: 'fridge', name: 'Refrigerator', watts: 300, color: 'text-cyan-400', glow: 'shadow-[0_0_15px_rgba(34,211,238,0.6)]' },
 ];
 
 export const Level7Consumption = () => {
@@ -74,9 +74,9 @@ export const Level7Consumption = () => {
       const mat = mesh.material as THREE.MeshStandardMaterial;
       if (activeIds.has(id)) {
         if (id === 'light') mat.emissive.setHex(0xffffff);
-        if (id === 'tv') mat.emissive.setHex(0x0088ff);
-        if (id === 'fan') mat.emissive.setHex(0x00ff00);
-        if (id === 'fridge') mat.emissive.setHex(0xaaaaaa);
+        if (id === 'tv') mat.emissive.setHex(0xaa00ff);
+        if (id === 'fan') mat.emissive.setHex(0x0088ff);
+        if (id === 'fridge') mat.emissive.setHex(0x00ffff);
         mat.emissiveIntensity = 1;
       } else {
         mat.emissive.setHex(0x000000);
@@ -104,33 +104,55 @@ export const Level7Consumption = () => {
     <div className="w-full h-screen relative">
       <div ref={containerRef} className="absolute inset-0 z-0" />
       
-      <div className="absolute right-8 top-24 z-10 flex flex-col gap-6 pointer-events-auto">
-        <InfoCard title="Power Consumption">
-          <p>Power is measured in <strong>Watts (W)</strong>.</p>
+      <div className="absolute right-8 top-32 z-10 flex flex-col gap-6 pointer-events-auto w-[24rem]">
+        <InfoCard 
+          title="Power Consumption" 
+          icon="💡"
+          colorClass="from-cyan-500 to-blue-600"
+          borderColor="border-cyan-400"
+        >
+          <p>Power is measured in <strong className="text-cyan-600">Watts (W)</strong>.</p>
           <p>Devices that create heat or cooling (like a Fridge) use much more power than devices that just make light or compute data.</p>
         </InfoCard>
 
-        <div className="glass-panel p-6 rounded-2xl w-80">
-          <div className="mb-6 p-4 bg-slate-900 rounded-xl border border-cyan-500 shadow-[0_0_10px_rgba(0,255,255,0.3)]">
-            <h3 className="text-sm text-cyan-400 font-bold uppercase tracking-wider mb-1">Total Current Draw</h3>
-            <div className="text-4xl font-display text-white">{totalWatts} <span className="text-xl text-slate-400">W</span></div>
+        <div className="glass-panel p-0 rounded-2xl overflow-hidden">
+          <div className="bg-gradient-to-r from-slate-800 to-slate-700 px-5 py-3 border-b border-white/10">
+            <h3 className="text-xl font-display text-white font-bold">Smart Meter</h3>
           </div>
-
-          <div className="space-y-4">
-            {CONSUMERS.map(app => (
-              <div key={app.id} className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg">
-                <div>
-                  <Label htmlFor={app.id} className="text-white font-bold cursor-pointer">{app.name}</Label>
-                  <p className="text-sm text-slate-400">{app.watts} W</p>
-                </div>
-                <Switch 
-                  id={app.id} 
-                  checked={activeIds.has(app.id)}
-                  onCheckedChange={() => toggleAppliance(app.id)}
-                  className="data-[state=checked]:bg-green-500"
-                />
+          <div className="p-5">
+            <div className="mb-6 p-4 bg-slate-900 rounded-xl border-2 border-cyan-500 shadow-[inset_0_0_20px_rgba(0,255,255,0.2)]">
+              <h3 className="text-xs text-cyan-400 font-bold uppercase tracking-widest mb-1 opacity-80">Total Current Draw</h3>
+              <div className="text-5xl font-mono text-cyan-400 tracking-wider text-glow-cyan">
+                {totalWatts.toString().padStart(4, '0')} <span className="text-2xl text-cyan-600">W</span>
               </div>
-            ))}
+            </div>
+
+            <div className="space-y-3">
+              {CONSUMERS.map(app => {
+                const isActive = activeIds.has(app.id);
+                return (
+                  <div 
+                    key={app.id} 
+                    className={`flex items-center justify-between p-3 rounded-xl border transition-all duration-300 ${
+                      isActive ? `bg-slate-800 border-slate-600 ${app.glow}` : 'bg-slate-800/50 border-transparent'
+                    }`}
+                  >
+                    <div>
+                      <Label htmlFor={app.id} className={`font-bold text-lg cursor-pointer transition-colors ${isActive ? app.color : 'text-white'}`}>
+                        {app.name}
+                      </Label>
+                      <p className="text-sm text-slate-400">{app.watts} W</p>
+                    </div>
+                    <Switch 
+                      id={app.id} 
+                      checked={isActive}
+                      onCheckedChange={() => toggleAppliance(app.id)}
+                      className={`data-[state=checked]:bg-gradient-to-r data-[state=checked]:from-cyan-400 data-[state=checked]:to-blue-500 scale-125 mr-2`}
+                    />
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>

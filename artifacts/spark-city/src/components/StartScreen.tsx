@@ -7,68 +7,103 @@ export const StartScreen = () => {
   const { setLevel } = useGameStore();
 
   return (
-    <div className="w-full h-screen flex flex-col items-center justify-center relative overflow-hidden">
-      {/* Background Image injected via CSS in base, here just overlays */}
+    <div className="w-full h-screen flex flex-col items-center justify-center relative overflow-hidden bg-[#050b14]">
+      {/* Background Image */}
       <img 
         src={`${import.meta.env.BASE_URL}images/spark-bg.png`} 
         alt="Spark City Background"
-        className="absolute inset-0 w-full h-full object-cover opacity-40 z-0"
+        className="absolute inset-0 w-full h-full object-cover opacity-30 z-0 mix-blend-screen"
       />
       
-      <div className="absolute inset-0 bg-gradient-to-t from-[#050b14] to-transparent z-0" />
+      {/* Particle Overlay */}
+      <div className="absolute inset-0 pointer-events-none z-0">
+        {[...Array(20)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute w-2 h-2 bg-cyan-400 rounded-full glow-cyan"
+            initial={{
+              x: Math.random() * window.innerWidth,
+              y: window.innerHeight + 10,
+              opacity: 0
+            }}
+            animate={{
+              y: -10,
+              opacity: [0, 1, 0],
+              scale: [0, 1.5, 0]
+            }}
+            transition={{
+              duration: 2 + Math.random() * 3,
+              repeat: Infinity,
+              delay: Math.random() * 5,
+              ease: "linear"
+            }}
+          />
+        ))}
+      </div>
 
-      <motion.div 
-        initial={{ y: -50, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 1, type: "spring" }}
-        className="z-10 text-center mb-12"
-      >
-        <Zap className="w-24 h-24 mx-auto text-yellow-400 fill-yellow-400 glow-yellow mb-6" />
-        <h1 className="text-7xl md:text-8xl font-display text-transparent bg-clip-text bg-gradient-to-b from-cyan-300 to-blue-600 filter drop-shadow-[0_0_20px_rgba(0,255,255,0.5)] leading-tight">
-          SPARK CITY
-        </h1>
-        <h2 className="text-3xl md:text-4xl font-display text-yellow-400 mt-2">ADVENTURE</h2>
-      </motion.div>
+      <div className="absolute inset-0 bg-gradient-to-t from-[#050b14] via-transparent to-[#050b14]/50 z-0" />
 
-      <motion.div 
-        initial={{ scale: 0.8, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ delay: 0.5, duration: 0.5 }}
-        className="z-10 glass-panel p-8 rounded-3xl max-w-2xl mb-12 border border-cyan-500/30 shadow-[0_0_30px_rgba(0,255,255,0.15)]"
-      >
-        <h3 className="text-2xl font-bold text-white mb-6 text-center">How to Play</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-slate-200">
-          <div className="flex items-center gap-4 bg-slate-800/50 p-4 rounded-xl">
-            <div className="w-12 h-12 bg-cyan-500/20 rounded-full flex items-center justify-center border border-cyan-500/50">👆</div>
-            <p>Click, tap, and drag to interact with machines.</p>
+      <div className="z-10 flex flex-col items-center justify-center w-full max-w-4xl px-6 py-6 h-full" style={{gap: '3vh'}}>
+        <motion.div 
+          initial={{ y: -50, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 1, type: "spring" }}
+          className="text-center shrink-0"
+        >
+          <div className="flex items-center justify-center gap-3 mb-1">
+            <Zap className="w-10 h-10 text-yellow-400 fill-yellow-400 animate-float drop-shadow-[0_0_15px_rgba(255,204,0,0.8)]" />
+            <h1 className="text-5xl md:text-6xl font-display text-transparent bg-clip-text bg-gradient-to-b from-white via-cyan-300 to-blue-500 text-glow-cyan leading-none">
+              SPARK CITY
+            </h1>
+            <Zap className="w-10 h-10 text-yellow-400 fill-yellow-400 animate-float drop-shadow-[0_0_15px_rgba(255,204,0,0.8)]" />
           </div>
-          <div className="flex items-center gap-4 bg-slate-800/50 p-4 rounded-xl">
-            <div className="w-12 h-12 bg-yellow-500/20 rounded-full flex items-center justify-center border border-yellow-500/50">🤖</div>
-            <p>Listen to Volt the Robot for helpful clues.</p>
-          </div>
-          <div className="flex items-center gap-4 bg-slate-800/50 p-4 rounded-xl">
-            <div className="w-12 h-12 bg-green-500/20 rounded-full flex items-center justify-center border border-green-500/50">⚡</div>
-            <p>Learn how electricity reaches your home!</p>
-          </div>
-          <div className="flex items-center gap-4 bg-slate-800/50 p-4 rounded-xl">
-            <div className="w-12 h-12 bg-purple-500/20 rounded-full flex items-center justify-center border border-purple-500/50">⭐</div>
-            <p>Collect stars and points along the way.</p>
-          </div>
+          <h2 className="text-2xl md:text-3xl font-display text-yellow-400 text-glow-yellow">ADVENTURE</h2>
+          <p className="text-white/80 text-xs md:text-sm font-bold mt-1 tracking-widest uppercase">From Generation to Home Electricity</p>
+        </motion.div>
+
+        <div className="grid grid-cols-2 gap-3 w-full max-w-3xl shrink-0">
+          {[
+            { gradient: "from-cyan-400 to-blue-600", icon: "👆", label: "Click & Drag Machines", delay: 0.2 },
+            { gradient: "from-yellow-400 to-orange-500", icon: "🤖", label: "Listen to Volt's Clues", delay: 0.3 },
+            { gradient: "from-green-400 to-teal-600", icon: "⚡", label: "Learn Electricity Flow", delay: 0.4 },
+            { gradient: "from-purple-500 to-pink-500", icon: "⭐", label: "Collect Stars & Points", delay: 0.5 },
+          ].map((card) => (
+            <motion.div
+              key={card.label}
+              whileHover={{ scale: 1.04 }}
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: card.delay }}
+              className={`bg-gradient-to-br ${card.gradient} rounded-2xl py-3 px-4 shadow-xl flex items-center gap-3 border-2 border-white/20`}
+            >
+              <div className="text-3xl drop-shadow-lg shrink-0">{card.icon}</div>
+              <p className="text-white font-bold text-sm md:text-base leading-tight">{card.label}</p>
+            </motion.div>
+          ))}
         </div>
-      </motion.div>
 
-      <motion.button
-        initial={{ y: 50, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 1, duration: 0.5 }}
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        onClick={() => setLevel(1)}
-        className="z-10 px-12 py-5 bg-gradient-to-r from-yellow-400 to-orange-500 text-slate-900 font-display font-bold text-3xl rounded-full glow-yellow flex items-center gap-4 hover:shadow-[0_0_40px_rgba(255,204,0,0.8)] transition-all"
-      >
-        <Play className="w-10 h-10 fill-slate-900" />
-        START ADVENTURE
-      </motion.button>
+        <motion.button
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ delay: 0.3, duration: 0.4 }}
+          whileHover={{ scale: 1.06 }}
+          whileTap={{ scale: 0.94 }}
+          onClick={() => setLevel(1)}
+          className="shrink-0 px-10 py-4 bg-gradient-to-r from-yellow-400 via-orange-400 to-orange-500 text-slate-900 font-display font-bold text-xl md:text-2xl rounded-full glow-yellow flex items-center gap-3 hover:shadow-[0_0_60px_rgba(255,204,0,1)] transition-all border-4 border-yellow-200"
+        >
+          <Play className="w-7 h-7 fill-slate-900" />
+          START ADVENTURE
+        </motion.button>
+      </div>
+
+      <motion.img 
+        initial={{ x: 100, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        transition={{ delay: 1, duration: 1 }}
+        src={`${import.meta.env.BASE_URL}images/volt-robot.png`} 
+        alt="Volt Waving"
+        className="absolute bottom-4 right-4 w-48 md:w-64 h-auto animate-float drop-shadow-2xl z-20 pointer-events-none"
+      />
     </div>
   );
 };
