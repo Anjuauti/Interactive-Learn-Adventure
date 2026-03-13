@@ -1,0 +1,19 @@
+packages:
+  "three": "Required for 3D educational game scenes"
+  "@types/three": "TypeScript definitions for Three.js"
+  "framer-motion": "For smooth UI animations, speech bubbles, and transitions"
+  "zustand": "For simplified global game state management across levels"
+  "lucide-react": "Icons for UI and game components"
+
+images:
+  - path: "artifacts/spark-city/public/images/spark-bg.png"
+    description: "A dark sci-fi futuristic city background with glowing neon cyan and yellow electricity lines, stylized like a kid-friendly 3D cartoon."
+    aspect_ratio: "16:9"
+  - path: "artifacts/spark-city/public/images/volt-robot.png"
+    description: "A cute, friendly floating AI robot mascot named Volt with glowing cyan eyes, yellow energy accents, and a metallic white body, 3D cartoon style."
+    aspect_ratio: "1:1"
+
+notes:
+  - This is a fully client-side 3D interactive game.
+  - Three.js is used via vanilla implementation wrapped in React components for maximum control over the render loop.
+  - Framer Motion handles the HTML overlay UI animations.

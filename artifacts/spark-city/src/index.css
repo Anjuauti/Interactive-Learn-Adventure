@@ -1,0 +1,76 @@
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap');
+@import "tailwindcss";
+
+@theme inline {
+  --font-sans: 'Nunito', sans-serif;
+  --font-display: 'Fredoka', sans-serif;
+
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  
+  --color-neon-cyan: hsl(180, 100%, 50%);
+  --color-neon-yellow: hsl(50, 100%, 50%);
+  --color-neon-green: hsl(120, 100%, 50%);
+  --color-neon-pink: hsl(300, 100%, 60%);
+  
+  --color-game-panel: rgba(15, 23, 42, 0.8);
+}
+
+:root {
+  --background: 222 47% 7%;
+  --foreground: 210 40% 98%;
+  --border: 214 32% 91%;
+}
+
+@layer base {
+  body {
+    @apply bg-background text-foreground font-sans overflow-hidden select-none;
+    background-color: #050b14;
+    background-image: radial-gradient(circle at 50% 50%, #112240 0%, #050b14 100%);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    @apply font-bold tracking-wide;
+  }
+}
+
+/* Custom Game Animations */
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 10px var(--color-neon-cyan), 0 0 20px var(--color-neon-cyan); }
+  50% { box-shadow: 0 0 25px var(--color-neon-cyan), 0 0 40px var(--color-neon-cyan); }
+}
+
+@keyframes pulse-glow-yellow {
+  0%, 100% { box-shadow: 0 0 10px var(--color-neon-yellow), 0 0 20px var(--color-neon-yellow); }
+  50% { box-shadow: 0 0 25px var(--color-neon-yellow), 0 0 40px var(--color-neon-yellow); }
+}
+
+.glow-cyan {
+  animation: pulse-glow 2s infinite;
+}
+
+.glow-yellow {
+  animation: pulse-glow-yellow 2s infinite;
+}
+
+.glass-panel {
+  background: var(--color-game-panel);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* Range Slider Styling */
+input[type=range] {
+  -webkit-appearance: none;
+  @apply w-full h-4 rounded-full bg-slate-800 border border-slate-600 outline-none;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  @apply w-8 h-8 rounded-full bg-yellow-400 cursor-pointer shadow-[0_0_15px_rgba(255,204,0,0.8)] border-2 border-white;
+  transition: transform 0.1s;
+}
+input[type=range]::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+}

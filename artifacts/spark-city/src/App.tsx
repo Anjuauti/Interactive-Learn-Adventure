@@ -1,0 +1,71 @@
+import React from "react";
+import { Switch, Route, Router as WouterRouter } from "wouter";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Toaster } from "@/components/ui/toaster";
+import { TooltipProvider } from "@/components/ui/tooltip";
+
+// Game State & Overlays
+import { useGameStore } from "./store/game-store";
+import { GameHUD, VoltGuide, NextLevelButton } from "./components/GameUI";
+
+// Screens & Levels
+import { StartScreen } from "./components/StartScreen";
+import { FinalScreen } from "./components/FinalScreen";
+import { Level1Dam } from "./components/levels/Level1Dam";
+import { Level2Generator } from "./components/levels/Level2Generator";
+import { Level3Transmission } from "./components/levels/Level3Transmission";
+import { Level4Substation } from "./components/levels/Level4Substation";
+import { Level5House } from "./components/levels/Level5House";
+import { Level6Wiring } from "./components/levels/Level6Wiring";
+import { Level7Consumption } from "./components/levels/Level7Consumption";
+
+const queryClient = new QueryClient();
+
+function GameEngine() {
+  const { currentLevel } = useGameStore();
+
+  return (
+    <div className="w-full h-screen overflow-hidden bg-[#050b14]">
+      {/* Universal Overlays */}
+      <GameHUD />
+      <VoltGuide />
+      <NextLevelButton />
+
+      {/* Level Router based on state rather than URL for continuous seamless game flow */}
+      {currentLevel === 0 && <StartScreen />}
+      {currentLevel === 1 && <Level1Dam />}
+      {currentLevel === 2 && <Level2Generator />}
+      {currentLevel === 3 && <Level3Transmission />}
+      {currentLevel === 4 && <Level4Substation />}
+      {currentLevel === 5 && <Level5House />}
+      {currentLevel === 6 && <Level6Wiring />}
+      {currentLevel === 7 && <Level7Consumption />}
+      {currentLevel === 8 && <FinalScreen />}
+    </div>
+  );
+}
+
+function Router() {
+  return (
+    <Switch>
+      <Route path="/" component={GameEngine} />
+      {/* Fallback routing */}
+      <Route component={() => <div className="text-white p-10">404 - Not Found</div>} />
+    </Switch>
+  );
+}
+
+function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+          <Router />
+        </WouterRouter>
+        <Toaster />
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+}
+
+export default App;

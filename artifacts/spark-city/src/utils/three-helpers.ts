@@ -1,0 +1,75 @@
+import * as THREE from 'three';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+
+export function initBasicScene(container: HTMLDivElement) {
+  const scene = new THREE.Scene();
+  // Optional subtle fog for depth
+  scene.fog = new THREE.FogExp2(0x050b14, 0.02);
+
+  const camera = new THREE.PerspectiveCamera(
+    60,
+    container.clientWidth / container.clientHeight,
+    0.1,
+    1000
+  );
+  camera.position.set(0, 15, 25);
+
+  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  renderer.setSize(container.clientWidth, container.clientHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // optimize
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  
+  container.appendChild(renderer.domElement);
+
+  const controls = new OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.05;
+  controls.maxPolarAngle = Math.PI / 2 - 0.1; // Don't go below ground
+
+  // Lighting
+  const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+  scene.add(ambientLight);
+
+  const dirLight = new THREE.DirectionalLight(0xffffff, 1);
+  dirLight.position.set(20, 40, 20);
+  dirLight.castShadow = true;
+  dirLight.shadow.mapSize.width = 2048;
+  dirLight.shadow.mapSize.height = 2048;
+  scene.add(dirLight);
+
+  // Helper grid for alignment
+  const gridHelper = new THREE.GridHelper(50, 50, 0x112240, 0x112240);
+  gridHelper.position.y = -0.1;
+  scene.add(gridHelper);
+
+  const handleResize = () => {
+    if (!container) return;
+    camera.aspect = container.clientWidth / container.clientHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(container.clientWidth, container.clientHeight);
+  };
+  window.addEventListener('resize', handleResize);
+
+  return {
+    scene,
+    camera,
+    renderer,
+    controls,
+    cleanup: () => {
+      window.removeEventListener('resize', handleResize);
+      renderer.dispose();
+      container.removeChild(renderer.domElement);
+    }
+  };
+}
+
+export const createGlowingMaterial = (color: number) => {
+  return new THREE.MeshStandardMaterial({
+    color: color,
+    emissive: color,
+    emissiveIntensity: 0.8,
+    roughness: 0.2,
+    metalness: 0.8,
+  });
+};

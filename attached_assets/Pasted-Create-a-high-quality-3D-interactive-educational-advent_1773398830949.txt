@@ -1,0 +1,394 @@
+Create a **high-quality 3D interactive educational adventure game** called **“Spark City Adventure: From Generation to Home Electricity.”**
+
+This game will be used in a **Science Park Exhibit** to teach children and visitors how electricity is generated, transmitted, converted, distributed, and finally used inside homes.
+
+The experience must be a **story-driven interactive learning game** where players explore the journey of electricity from **power plant to household appliances** using **3D models, animations, puzzles, and wiring simulations**.
+
+Target audience:
+Children aged **8–16**, school groups, and families visiting a science park.
+
+The game must be **fun, colorful, interactive, and scientifically accurate**.
+
+---
+
+GAME STORY
+
+Players enter a futuristic city called **Spark City**, where the electricity system has stopped working.
+
+A friendly AI robot guide named **Volt** helps the player restore electricity step-by-step.
+
+Each level represents a **different stage in the journey of electricity**.
+
+Players interact with **3D machines, electrical components, and wiring systems** to restore power.
+
+When each level is completed, a **large colorful “Next Level” button pops up** allowing the player to continue.
+
+---
+
+UI DESIGN REQUIREMENTS
+
+The interface must be designed for **kids and science exhibits**.
+
+UI must include:
+
+• **Bright colorful design**
+• **Large readable fonts**
+• **Simple icons**
+• **Card-based UI panels**
+• **Glowing arrows guiding interactions**
+
+The UI should look similar to a **modern learning game**.
+
+Instructions should appear in **large colorful cards with icons**.
+
+3D components should look **similar to real-world machines and electrical devices**, but simplified and colorful for children.
+
+---
+
+START SCREEN
+
+When the game starts, show a **welcome tutorial screen**.
+
+Display instructions like:
+
+• Follow glowing arrows to complete missions
+• Drag components to install them
+• Connect wires using your mouse
+• Turn switches to power the house
+
+Each instruction appears inside **large colorful cards**.
+
+A **Next button** starts the game.
+
+---
+
+LEVEL 1 — HYDROELECTRIC POWER GENERATION
+
+Show a **3D hydroelectric dam model**.
+
+3D components:
+
+• Water reservoir
+• Dam gate
+• Flowing water
+• Turbine blades
+• Generator rotor and stator
+• Electromagnetic coils
+
+Instruction popup:
+
+“Tap the golden gate to open the dam.”
+
+When the gate opens:
+
+Water flows → spins turbine → turbine rotates generator → generator produces electricity.
+
+Scientific explanation includes:
+
+• kinetic energy of water
+• turbine mechanical rotation
+• electromagnetic induction
+• how generators produce **AC electricity**
+
+Show animated **magnetic field and AC waveform**.
+
+Mini challenge:
+
+Players adjust water flow to maintain correct **turbine RPM**.
+
+Correct action:
+
+Generator lights up and electricity is produced.
+
+Wrong action:
+
+Show warnings like:
+
+• turbine overload
+• insufficient water flow.
+
+After electricity generation succeeds, a **Next Level button appears**.
+
+---
+
+LEVEL 2 — GENERATOR MECHANISM
+
+Show a **3D cross-section generator model**.
+
+Components:
+
+• rotor magnet
+• stator coils
+• rotating shaft
+
+Animation shows:
+
+Rotating magnetic field → current induced in stator coils.
+
+Scientific explanation shows how **alternating current is generated**.
+
+Players spin the generator and observe the **AC waveform animation**.
+
+---
+
+LEVEL 3 — STEP-UP TRANSFORMER & TRANSMISSION
+
+3D models:
+
+• step-up transformer
+• transmission towers
+• high-voltage power lines
+• insulators
+
+Explain:
+
+Why electricity is transmitted at **high voltage to reduce power loss**.
+
+Players must connect **broken transmission wires between towers**.
+
+Correct connection:
+
+Electricity visually flows across the grid.
+
+Wrong connection:
+
+Show **short circuit warning**.
+
+---
+
+LEVEL 4 — SUBSTATION AND VOLTAGE CONTROL
+
+3D models:
+
+• step-down transformer
+• circuit breakers
+• control panels
+• distribution grid
+
+Explain how transformers **reduce voltage for safe city distribution**.
+
+Mini puzzle:
+
+Players adjust voltage controls.
+
+Correct setting:
+
+Electricity safely enters the city network.
+
+Wrong setting:
+
+Show overload warning.
+
+---
+
+LEVEL 5 — ELECTRICITY ENTERS THE HOUSE
+
+Show a **3D house model** with a **service pole and incoming power line**.
+
+Electricity flows into the house through:
+
+Power line → service wire → **electric meter** → **main switch** → **MCB panel** → home wiring.
+
+Show a **3D model of the electric meter**.
+
+Explain:
+
+• how the meter measures electricity consumption.
+
+Then show a **3D MCB distribution board mounted on the wall inside the house**.
+
+Explain:
+
+• what MCB is
+• how it protects against overload and short circuit.
+
+When electricity reaches the MCB, show **MCB switch turning ON**.
+
+---
+
+HOUSE WIRING EXPLANATION
+
+Show **three wires entering the house**.
+
+Information panel appears on the **right side of the screen** explaining:
+
+Phase wire – carries electrical current
+Neutral wire – returns current
+Earth wire – protects from electric shock
+
+Also show:
+
+• wire colors
+• copper conductor inside
+• insulation material
+
+Display **cutaway 3D animation of wire structure**.
+
+---
+
+LEVEL 6 — HOME WIRING SIMULATOR
+
+Show a **3D house with rooms**:
+
+Hall
+Kitchen
+Bedroom
+
+Players drag components from a **toolbox panel on the right side**.
+
+Components include:
+
+• LED light
+• ceiling fan
+• switch board
+• TV socket
+• refrigerator
+• washing machine
+• plug socket
+
+All components should look **similar to real household electrical devices**.
+
+Players must wire:
+
+MCB → switchboard → appliance.
+
+Correct wiring:
+
+Component activates.
+
+Wrong wiring:
+
+Show error message explaining the mistake.
+
+---
+
+LEVEL 7 — POWER CONSUMPTION LEARNING
+
+Each appliance shows its **power requirement**.
+
+Examples:
+
+LED bulb – 9W
+Fan – 70W
+TV – 120W
+Fridge – 300W
+Washing Machine – 500W
+
+When appliances turn ON:
+
+Electric current animation flows through wires.
+
+Energy meter updates consumption.
+
+---
+
+SWITCH CONTROL PANEL
+
+On the **right side of the UI**, display **switch buttons for each appliance**.
+
+Example:
+
+Light switch
+Fan switch
+TV switch
+
+When the player toggles a switch:
+
+The appliance activates inside the **3D house model**.
+
+Examples:
+
+Light glows
+Fan rotates
+TV screen turns on
+Fridge lights up.
+
+---
+
+ERROR HANDLING SYSTEM
+
+If the player makes a mistake:
+
+• show visual warning
+• explain the mistake scientifically
+• guide the player toward the correct solution.
+
+Example errors:
+
+• wrong wiring
+• transformer overload
+• short circuit
+• incorrect appliance connection.
+
+---
+
+REWARD SYSTEM
+
+Correct actions:
+
+• reward stars
+• points
+• positive feedback messages.
+
+Wrong actions:
+
+• small score penalty
+• helpful hints.
+
+---
+
+FINAL LEVEL — SMART HOME ACTIVATION
+
+After all appliances are installed and powered:
+
+Show a **fully illuminated 3D home**.
+
+Animation shows electricity traveling:
+
+Power plant → transmission grid → house → appliances.
+
+Display message:
+
+“Congratulations! You successfully restored electricity to Spark City.”
+
+---
+
+FINAL SUMMARY SCREEN
+
+Show what the player learned:
+
+• electricity generation
+• turbines and generators
+• transmission lines
+• transformers
+• MCB safety protection
+• home wiring system
+• appliance electricity consumption.
+
+---
+
+VISUAL STYLE
+
+• bright colorful 3D environment
+• large readable fonts
+• cartoon-style science park design
+• glowing electricity animations
+• real-world inspired electrical components
+• smooth interactive transitions.
+
+---
+
+TECHNOLOGY REQUIREMENTS
+
+• React for UI
+• Three.js / WebGL for 3D graphics
+• optimized for large touchscreen science exhibit displays
+• smooth animations and interactions.
+
+---
+
+EDUCATIONAL GOAL
+
+By completing the game, players must clearly understand the **entire journey of electricity**:
+
+Generation → Transformation → Transmission → Distribution → Home Wiring → Appliance Usage.
