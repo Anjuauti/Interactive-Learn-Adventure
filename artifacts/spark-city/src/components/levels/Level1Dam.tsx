@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
-import { initBasicScene, createGlowingMaterial } from '../../utils/three-helpers';
+import { initBasicScene } from '../../utils/three-helpers';
 import { useGameStore } from '../../store/game-store';
 import { InfoCard } from '../GameUI';
 
@@ -9,94 +9,141 @@ export const Level1Dam = () => {
   const [waterFlow, setWaterFlow] = useState(0);
   const { setVoltMessage, setLevelComplete, addScore, addStar } = useGameStore();
   const turbineRef = useRef<THREE.Group | null>(null);
-  const generatorMaterialRef = useRef<THREE.MeshStandardMaterial | null>(null);
+  const generatorMatRef = useRef<THREE.MeshStandardMaterial | null>(null);
   const flowParticlesRef = useRef<THREE.Points | null>(null);
+  const completedRef = useRef(false);
 
   useEffect(() => {
-    setVoltMessage("Adjust the water flow slider! We need it between 50% and 75% to generate stable electricity.");
-    
+    setVoltMessage("Adjust the water gate slider! We need flow between 50–75% to generate stable electricity.");
+
     if (!containerRef.current) return;
     const { scene, camera, renderer, controls, cleanup } = initBasicScene(containerRef.current);
-    
-    // Create Dam Structure
-    const damGeo = new THREE.BoxGeometry(20, 15, 5);
-    const damMat = new THREE.MeshStandardMaterial({ color: 0x556677, roughness: 0.8 });
-    const dam = new THREE.Mesh(damGeo, damMat);
-    dam.position.set(-10, 7.5, 0);
+
+    camera.position.set(0, 18, 30);
+    controls.target.set(0, 3, 0);
+
+    // ── Green terrain ──
+    const terrain = new THREE.Mesh(
+      new THREE.PlaneGeometry(80, 60),
+      new THREE.MeshStandardMaterial({ color: 0x7ec88e, roughness: 0.9 })
+    );
+    terrain.rotation.x = -Math.PI / 2;
+    terrain.position.y = -0.3;
+    scene.add(terrain);
+
+    // ── Background mountains ──
+    const hillColors = [0x6dba7d, 0x5fac6f, 0x78c485];
+    const hillPositions: [number, number, number][] = [[-18, 0, -18], [14, 0, -22], [28, 0, -15]];
+    hillPositions.forEach(([x, y, z], i) => {
+      const hill = new THREE.Mesh(
+        new THREE.ConeGeometry(7 + i * 2, 10 + i * 2, 4),
+        new THREE.MeshStandardMaterial({ color: hillColors[i], roughness: 0.9 })
+      );
+      hill.rotation.y = Math.PI / 4;
+      hill.position.set(x, y + (5 + i), z);
+      scene.add(hill);
+    });
+
+    // ── Water reservoir (left) ──
+    const reservoir = new THREE.Mesh(
+      new THREE.BoxGeometry(22, 0.4, 18),
+      new THREE.MeshStandardMaterial({ color: 0x5dade2, transparent: true, opacity: 0.85, roughness: 0.1, metalness: 0.1 })
+    );
+    reservoir.position.set(-17, 0.2, 0);
+    scene.add(reservoir);
+
+    // ── Dam wall ──
+    const dam = new THREE.Mesh(
+      new THREE.BoxGeometry(3, 9, 18),
+      new THREE.MeshStandardMaterial({ color: 0xb0a090, roughness: 0.85 })
+    );
+    dam.position.set(-5, 4, 0);
     dam.castShadow = true;
-    dam.receiveShadow = true;
     scene.add(dam);
 
-    // Water reservoir
-    const waterGeo = new THREE.BoxGeometry(15, 14, 15);
-    const waterMat = new THREE.MeshStandardMaterial({ color: 0x0088ff, transparent: true, opacity: 0.6 });
-    const water = new THREE.Mesh(waterGeo, waterMat);
-    water.position.set(-27.5, 7, 0);
-    scene.add(water);
+    // ── Tailwater (right of dam) ──
+    const tailwater = new THREE.Mesh(
+      new THREE.BoxGeometry(28, 0.3, 12),
+      new THREE.MeshStandardMaterial({ color: 0x5dade2, transparent: true, opacity: 0.7 })
+    );
+    tailwater.position.set(8, 0.1, 0);
+    scene.add(tailwater);
 
-    // Turbine Pipe
-    const pipeGeo = new THREE.CylinderGeometry(1.5, 1.5, 10, 16);
-    const pipeMat = new THREE.MeshStandardMaterial({ color: 0x334455, metalness: 0.5 });
-    const pipe = new THREE.Mesh(pipeGeo, pipeMat);
-    pipe.rotation.z = Math.PI / 2;
-    pipe.position.set(-5, 2, 0);
-    scene.add(pipe);
+    // ── Penstock pipe ──
+    const penstock = new THREE.Mesh(
+      new THREE.CylinderGeometry(1.0, 1.0, 10, 16),
+      new THREE.MeshStandardMaterial({ color: 0x607080, metalness: 0.6, roughness: 0.4 })
+    );
+    penstock.rotation.z = Math.PI / 2;
+    penstock.position.set(0, 1.5, 0);
+    scene.add(penstock);
 
-    // Turbine Group
+    // ── Powerhouse building ──
+    const powerhouse = new THREE.Mesh(
+      new THREE.BoxGeometry(6, 6, 10),
+      new THREE.MeshStandardMaterial({ color: 0xc8b8a2, roughness: 0.8 })
+    );
+    powerhouse.position.set(7, 3, 0);
+    scene.add(powerhouse);
+
+    // ── Green roof ──
+    const roof = new THREE.Mesh(
+      new THREE.BoxGeometry(7, 0.8, 11),
+      new THREE.MeshStandardMaterial({ color: 0x5fa86e, roughness: 0.9 })
+    );
+    roof.position.set(7, 6.4, 0);
+    scene.add(roof);
+
+    // ── Turbine group ──
     const turbine = new THREE.Group();
-    turbine.position.set(2, 2, 0);
-    
-    const coreGeo = new THREE.CylinderGeometry(1, 1, 2, 16);
-    const coreMat = new THREE.MeshStandardMaterial({ color: 0xffaa00, metalness: 0.8 });
-    const core = new THREE.Mesh(coreGeo, coreMat);
-    core.rotation.x = Math.PI / 2;
-    turbine.add(core);
+    turbine.position.set(5, 1.5, 0);
 
-    for(let i=0; i<6; i++) {
-      const bladeGeo = new THREE.BoxGeometry(0.2, 3, 1);
-      const bladeMat = new THREE.MeshStandardMaterial({ color: 0xdd8800 });
-      const blade = new THREE.Mesh(bladeGeo, bladeMat);
-      blade.position.y = 1.5;
-      
-      const bladePivot = new THREE.Group();
-      bladePivot.rotation.z = (Math.PI * 2 / 6) * i;
-      bladePivot.add(blade);
-      turbine.add(bladePivot);
+    const hub = new THREE.Mesh(
+      new THREE.CylinderGeometry(1.0, 1.0, 1.8, 20),
+      new THREE.MeshStandardMaterial({ color: 0xe8a020, metalness: 0.7, roughness: 0.3 })
+    );
+    hub.rotation.x = Math.PI / 2;
+    turbine.add(hub);
+
+    for (let i = 0; i < 6; i++) {
+      const blade = new THREE.Mesh(
+        new THREE.BoxGeometry(0.22, 3.2, 0.7),
+        new THREE.MeshStandardMaterial({ color: 0xcc8810, metalness: 0.5 })
+      );
+      blade.position.y = 1.6;
+      const pivot = new THREE.Group();
+      pivot.rotation.z = (Math.PI * 2 / 6) * i;
+      pivot.add(blade);
+      turbine.add(pivot);
     }
     scene.add(turbine);
     turbineRef.current = turbine;
 
-    // Generator Base
-    const genGeo = new THREE.BoxGeometry(4, 6, 4);
-    const genMat = new THREE.MeshStandardMaterial({ color: 0x223344 });
-    const genBox = new THREE.Mesh(genGeo, genMat);
-    genBox.position.set(8, 3, 0);
-    scene.add(genBox);
-
-    // Glowing Generator Core
-    const coreGGeo = new THREE.CylinderGeometry(1.5, 1.5, 3, 32);
-    const coreGMat = createGlowingMaterial(0x333333); // Start dark
-    generatorMaterialRef.current = coreGMat;
-    const genCore = new THREE.Mesh(coreGGeo, coreGMat);
-    genCore.position.set(8, 7, 0);
+    // ── Generator core (glows when running) ──
+    const genMat = new THREE.MeshStandardMaterial({ color: 0x334455, metalness: 0.7, roughness: 0.3 });
+    generatorMatRef.current = genMat;
+    const genCore = new THREE.Mesh(new THREE.CylinderGeometry(1.2, 1.2, 2.5, 32), genMat);
+    genCore.rotation.x = Math.PI / 2;
+    genCore.position.set(9.5, 2.5, 0);
     scene.add(genCore);
 
-    // Water particles
-    const particleGeo = new THREE.BufferGeometry();
-    const particleCount = 200;
-    const posArray = new Float32Array(particleCount * 3);
-    for(let i=0; i<particleCount * 3; i++) {
-      posArray[i] = (Math.random() - 0.5) * 2;
+    // ── Water flow particles ──
+    const pCount = 150;
+    const pGeo = new THREE.BufferGeometry();
+    const pPos = new Float32Array(pCount * 3);
+    for (let i = 0; i < pCount * 3; i += 3) {
+      pPos[i] = (Math.random() - 0.5) * 2;
+      pPos[i + 1] = (Math.random() - 0.5) * 1.5;
+      pPos[i + 2] = (Math.random() - 0.5) * 1.5;
     }
-    particleGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-    const particleMat = new THREE.PointsMaterial({ color: 0x00ffff, size: 0.3, transparent: true, opacity: 0.8 });
-    const particles = new THREE.Points(particleGeo, particleMat);
-    particles.position.set(-5, 2, 0);
+    pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
+    const particles = new THREE.Points(
+      pGeo,
+      new THREE.PointsMaterial({ color: 0xaaddff, size: 0.18, transparent: true, opacity: 0.9 })
+    );
+    particles.position.set(-2, 1.5, 0);
     scene.add(particles);
     flowParticlesRef.current = particles;
-
-    camera.position.set(0, 15, 25);
-    controls.target.set(2, 5, 0);
 
     let frameId: number;
     const animate = () => {
@@ -106,102 +153,116 @@ export const Level1Dam = () => {
     };
     animate();
 
-    return () => {
-      cancelAnimationFrame(frameId);
-      cleanup();
-    };
+    return () => { cancelAnimationFrame(frameId); cleanup(); };
   }, []);
 
-  // React to water flow changes
   useEffect(() => {
     let frameId: number;
-    const animateTurbine = () => {
-      frameId = requestAnimationFrame(animateTurbine);
+    const loop = () => {
+      frameId = requestAnimationFrame(loop);
       if (turbineRef.current) {
-        turbineRef.current.rotation.z -= (waterFlow / 100) * 0.5;
+        turbineRef.current.rotation.z -= (waterFlow / 100) * 0.06;
       }
-      
       if (flowParticlesRef.current) {
-        const positions = flowParticlesRef.current.geometry.attributes.position.array as Float32Array;
-        for(let i=0; i<positions.length; i+=3) {
-          positions[i] += (waterFlow / 100) * 0.5;
-          if (positions[i] > 5) positions[i] = -5;
+        const pos = flowParticlesRef.current.geometry.attributes.position.array as Float32Array;
+        for (let i = 0; i < pos.length; i += 3) {
+          pos[i] += (waterFlow / 100) * 0.12;
+          if (pos[i] > 4) pos[i] = -4;
         }
         flowParticlesRef.current.geometry.attributes.position.needsUpdate = true;
       }
-      
-      if (generatorMaterialRef.current) {
+      if (generatorMatRef.current) {
         if (waterFlow >= 50 && waterFlow <= 75) {
-          generatorMaterialRef.current.emissive.setHex(0x39ff14); // Green glow
+          generatorMatRef.current.emissive.setHex(0x22bb44);
+          generatorMatRef.current.emissiveIntensity = 0.8;
         } else if (waterFlow > 75) {
-          generatorMaterialRef.current.emissive.setHex(0xff0000); // Red overload
+          generatorMatRef.current.emissive.setHex(0xff2200);
+          generatorMatRef.current.emissiveIntensity = 1.0;
         } else {
-          generatorMaterialRef.current.emissive.setHex(0x333333); // Off
+          generatorMatRef.current.emissive.setHex(0x000000);
+          generatorMatRef.current.emissiveIntensity = 0;
         }
       }
     };
-    animateTurbine();
+    loop();
 
-    const checkTimer = setTimeout(() => {
+    const timer = setTimeout(() => {
       if (waterFlow >= 50 && waterFlow <= 75) {
-        setVoltMessage("Perfect! The generator is producing AC electricity! Kinetic energy is converted into electrical energy.");
-        setLevelComplete(true);
-        addScore(100);
-        addStar();
+        setVoltMessage("⭐ Perfect flow! Potential energy → Kinetic energy → Electrical energy! The generator is producing 100V AC!");
+        if (!completedRef.current) {
+          setLevelComplete(true);
+          addScore(100);
+          addStar();
+          completedRef.current = true;
+        }
       } else if (waterFlow > 75) {
-        setVoltMessage("Warning! Turbine Overload! Reduce the water flow before it breaks!");
+        setVoltMessage("⚠️ Too much flow! The turbine is overloading. Reduce to below 75%!");
         setLevelComplete(false);
       } else if (waterFlow > 0) {
-        setVoltMessage("Insufficient flow. The turbine isn't spinning fast enough to generate power.");
+        setVoltMessage("💧 Not enough flow yet. The turbine needs at least 50% to spin fast enough.");
         setLevelComplete(false);
       }
-    }, 1500);
+    }, 1200);
 
-    return () => {
-      cancelAnimationFrame(frameId);
-      clearTimeout(checkTimer);
-    };
-  }, [waterFlow, setVoltMessage, setLevelComplete, addScore, addStar]);
+    return () => { cancelAnimationFrame(frameId); clearTimeout(timer); };
+  }, [waterFlow]);
+
+  const zoneLabel =
+    waterFlow >= 50 && waterFlow <= 75 ? '✅ Optimal — Generating Power!' :
+    waterFlow > 75 ? '🔴 Overload — Too Much Flow!' :
+    waterFlow > 0 ? '🟡 Too Low — Need More Flow' : '⚪ Gate Closed';
 
   return (
-    <div className="w-full h-screen relative">
+    <div className="w-full h-full relative">
       <div ref={containerRef} className="absolute inset-0 z-0" />
-      
-      <div className="absolute right-8 top-32 z-10 flex flex-col gap-6 w-[22rem]">
-        <InfoCard 
-          title="Hydroelectric Power" 
-          icon="🌊" 
+
+      <div className="absolute right-4 top-16 z-10 flex flex-col gap-3 pointer-events-auto" style={{ width: 'clamp(200px, 22vw, 280px)' }}>
+        <InfoCard
+          title="Hydroelectric Dam"
+          icon="🌊"
           colorClass="from-blue-500 to-cyan-400"
-          borderColor="border-blue-400"
+          borderColor="border-blue-100"
         >
-          <p>Water stored in a dam has <strong className="text-blue-600">Potential Energy</strong>.</p>
-          <p>When released, it turns into <strong className="text-blue-600">Kinetic Energy</strong>, spinning a turbine.</p>
-          <p>The spinning turbine turns a <strong className="text-yellow-600">Generator</strong> to create electricity!</p>
+          <p><strong className="text-blue-600">Step 1 — Potential Energy:</strong> Water stored high in the reservoir has gravitational potential energy (PE = mgh). The higher the water, the more energy stored.</p>
+          <p><strong className="text-cyan-600">Step 2 — Kinetic Energy:</strong> Opening the gate sends water through the penstock (pipe). Falling water converts PE → Kinetic Energy (½mv²), spinning the turbine blades.</p>
+          <p><strong className="text-green-600">Step 3 — Electricity:</strong> The spinning turbine drives the generator coils. Rotating magnets inside copper coils create an electric current by <em>electromagnetic induction</em> (Faraday's Law).</p>
+          <p><strong className="text-yellow-600">Formula:</strong> P = V × I &nbsp;|&nbsp; Target: 240V AC at 50Hz</p>
         </InfoCard>
 
-        <div className="bg-white rounded-2xl shadow-md border border-slate-200 pointer-events-auto overflow-hidden">
-          <div className="bg-slate-100 px-5 py-3 border-b border-slate-200">
-            <h3 className="text-xl font-display text-slate-800 font-bold">Control Gate</h3>
+        <div className="bg-white rounded-2xl shadow-md border border-slate-100 overflow-hidden">
+          <div className="bg-slate-50 px-4 py-2.5 border-b border-slate-100">
+            <h3 className="font-display font-bold text-slate-800" style={{ fontSize: '0.95rem' }}>Water Gate Control</h3>
           </div>
-          <div className="p-5">
-            <input 
-              type="range" 
-              min="0" max="100" 
-              value={waterFlow}
-              onChange={(e) => setWaterFlow(parseInt(e.target.value))}
-              className="mb-4"
-            />
-            
-            <div className="flex w-full h-2 rounded-full overflow-hidden mb-2">
-              <div className="bg-red-400" style={{ width: '40%' }} />
-              <div className="bg-green-400" style={{ width: '25%' }} />
-              <div className="bg-red-400" style={{ width: '35%' }} />
+          <div className="p-4">
+            <div className="flex justify-between text-xs font-bold mb-1 text-slate-500">
+              <span>0%</span>
+              <span className="text-slate-700 text-sm font-bold">{waterFlow}%</span>
+              <span>100%</span>
             </div>
-
-            <div className="flex justify-between text-sm font-bold mt-1">
-              <span className="text-red-400 w-[40%] text-left">Too Low</span>
-              <span className="text-green-500 w-[25%] text-center">Optimal</span>
-              <span className="text-red-400 w-[35%] text-right">Too High</span>
+            <input
+              type="range"
+              min="0" max="100"
+              value={waterFlow}
+              onChange={e => setWaterFlow(Number(e.target.value))}
+              className="w-full mb-3 accent-blue-500"
+            />
+            {/* Zone bar */}
+            <div className="flex w-full h-2 rounded-full overflow-hidden mb-1">
+              <div className="bg-red-300" style={{ width: '40%' }} />
+              <div className="bg-green-400" style={{ width: '25%' }} />
+              <div className="bg-red-300" style={{ width: '35%' }} />
+            </div>
+            <div className="flex justify-between text-xs font-bold">
+              <span className="text-red-400">Too Low</span>
+              <span className="text-green-500">Optimal<br />50–75%</span>
+              <span className="text-red-400">Overload</span>
+            </div>
+            <div className={`mt-3 text-center text-xs font-bold py-2 rounded-xl ${
+              waterFlow >= 50 && waterFlow <= 75 ? 'bg-green-50 text-green-600' :
+              waterFlow > 75 ? 'bg-red-50 text-red-500' :
+              'bg-slate-50 text-slate-400'
+            }`}>
+              {zoneLabel}
             </div>
           </div>
         </div>

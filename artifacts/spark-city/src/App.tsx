@@ -4,11 +4,9 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
-// Game State & Overlays
 import { useGameStore } from "./store/game-store";
 import { GameHUD, VoltGuide, NextLevelButton } from "./components/GameUI";
 
-// Screens & Levels
 import { StartScreen } from "./components/StartScreen";
 import { FinalScreen } from "./components/FinalScreen";
 import { Level1Dam } from "./components/levels/Level1Dam";
@@ -25,22 +23,35 @@ function GameEngine() {
   const { currentLevel } = useGameStore();
 
   return (
-    <div className="w-full h-screen overflow-hidden bg-[#050b14]">
-      {/* Universal Overlays */}
-      <GameHUD />
-      <VoltGuide />
-      <NextLevelButton />
+    <div
+      className="flex items-center justify-center overflow-hidden"
+      style={{ width: '100vw', height: '100vh', background: '#f1f5f9' }}
+    >
+      <div
+        className="relative overflow-hidden bg-white"
+        style={{
+          width: '100%',
+          height: '100%',
+          maxWidth: '1366px',
+          maxHeight: '768px',
+          boxShadow: '0 8px 40px rgba(0,0,0,0.18)',
+          borderRadius: '0px',
+        }}
+      >
+        <GameHUD />
+        <VoltGuide />
+        <NextLevelButton />
 
-      {/* Level Router based on state rather than URL for continuous seamless game flow */}
-      {currentLevel === 0 && <StartScreen />}
-      {currentLevel === 1 && <Level1Dam />}
-      {currentLevel === 2 && <Level2Generator />}
-      {currentLevel === 3 && <Level3Transmission />}
-      {currentLevel === 4 && <Level4Substation />}
-      {currentLevel === 5 && <Level5House />}
-      {currentLevel === 6 && <Level6Wiring />}
-      {currentLevel === 7 && <Level7Consumption />}
-      {currentLevel === 8 && <FinalScreen />}
+        {currentLevel === 0 && <StartScreen />}
+        {currentLevel === 1 && <Level1Dam />}
+        {currentLevel === 2 && <Level2Generator />}
+        {currentLevel === 3 && <Level3Transmission />}
+        {currentLevel === 4 && <Level4Substation />}
+        {currentLevel === 5 && <Level5House />}
+        {currentLevel === 6 && <Level6Wiring />}
+        {currentLevel === 7 && <Level7Consumption />}
+        {currentLevel === 8 && <FinalScreen />}
+      </div>
     </div>
   );
 }
@@ -49,8 +60,7 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={GameEngine} />
-      {/* Fallback routing */}
-      <Route component={() => <div className="text-white p-10">404 - Not Found</div>} />
+      <Route component={() => <div className="text-slate-800 p-10">404 - Not Found</div>} />
     </Switch>
   );
 }
