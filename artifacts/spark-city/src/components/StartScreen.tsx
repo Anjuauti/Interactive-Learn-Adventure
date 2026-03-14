@@ -1,67 +1,34 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useGameStore } from '../store/game-store';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, Zap } from 'lucide-react';
 
-const LEVEL_ICONS = [
-  { icon: '💧', label: 'Dam' },
-  { icon: '⚙️', label: 'Generator' },
-  { icon: '⚡', label: 'Transmission' },
-  { icon: '🏠', label: 'Home' },
-  { icon: '💡', label: 'Appliances' },
+const JOURNEY_STEPS = [
+  { icon: '💧', label: 'Dam', color: '#3b82f6' },
+  { icon: '⚙️', label: 'Generator', color: '#8b5cf6' },
+  { icon: '🗼', label: 'Transmission', color: '#f59e0b' },
+  { icon: '🏢', label: 'Substation', color: '#06b6d4' },
+  { icon: '🏠', label: 'Home Entry', color: '#10b981' },
+  { icon: '🔌', label: 'Wiring', color: '#f97316' },
+  { icon: '💡', label: 'Appliances', color: '#ec4899' },
 ];
 
-const INSTRUCTIONS = [
-  {
-    icon: '👆',
-    iconColor: '#3b82f6',
-    iconBg: '#eff6ff',
-    text: 'Tap and interact with 3D machines',
-    active: true,
-  },
-  {
-    icon: '🎚️',
-    iconColor: '#f59e0b',
-    iconBg: '#fffbeb',
-    text: 'Adjust controls to maintain correct settings',
-    active: false,
-  },
-  {
-    icon: '🔧',
-    iconColor: '#ef4444',
-    iconBg: '#fef2f2',
-    text: 'Drag components to install them',
-    active: false,
-  },
-  {
-    icon: '🔌',
-    iconColor: '#8b5cf6',
-    iconBg: '#f5f3ff',
-    text: 'Connect wires to build circuits',
-    active: false,
-  },
-  {
-    icon: '🔁',
-    iconColor: '#f59e0b',
-    iconBg: '#fffbeb',
-    text: 'Switch appliances ON to power the city',
-    active: false,
-  },
+const HOW_TO_PLAY = [
+  { icon: '👆', bg: '#eff6ff', text: 'TAP on 3D machines to interact with them' },
+  { icon: '🎚️', bg: '#fffbeb', text: 'ADJUST controls to reach the correct setting' },
+  { icon: '🔧', bg: '#fef2f2', text: 'DRAG components from the toolbox to install' },
+  { icon: '🔌', bg: '#f5f3ff', text: 'CONNECT wires to build safe electrical circuits' },
+  { icon: '💡', bg: '#f0fdf4', text: 'SWITCH appliances ON to power the whole city!' },
 ];
 
 export const StartScreen = () => {
   const { setLevel } = useGameStore();
-  const [showInstructions, setShowInstructions] = useState(false);
-  const [instrStep, setInstrStep] = useState(0);
-
-  const handleStart = () => {
-    setShowInstructions(true);
-    setInstrStep(0);
-  };
+  const [showHow, setShowHow] = useState(false);
+  const [step, setStep] = useState(0);
 
   const handleNext = () => {
-    if (instrStep < INSTRUCTIONS.length - 1) {
-      setInstrStep(s => s + 1);
+    if (step < HOW_TO_PLAY.length - 1) {
+      setStep(s => s + 1);
     } else {
       setLevel(1);
     }
@@ -71,142 +38,229 @@ export const StartScreen = () => {
     <div
       className="w-full h-full flex flex-col items-center justify-center relative overflow-hidden select-none"
       style={{
-        background: 'linear-gradient(160deg, #dbeafe 0%, #f8fafc 45%, #fef9c3 100%)',
+        background: 'linear-gradient(150deg, #0f172a 0%, #1e3a5f 40%, #0c2340 70%, #0f172a 100%)',
       }}
     >
-      {/* Main Landing */}
+      {/* Animated background sparks */}
+      {[...Array(12)].map((_, i) => (
+        <motion.div
+          key={i}
+          className="absolute rounded-full pointer-events-none"
+          style={{
+            width: Math.random() * 6 + 3,
+            height: Math.random() * 6 + 3,
+            background: i % 3 === 0 ? '#ffd700' : i % 3 === 1 ? '#00c2ff' : '#00e676',
+            left: `${Math.random() * 100}%`,
+            top: `${Math.random() * 100}%`,
+            opacity: 0.6,
+          }}
+          animate={{ opacity: [0.3, 1, 0.3], scale: [0.8, 1.4, 0.8] }}
+          transition={{ duration: 2 + Math.random() * 3, repeat: Infinity, delay: Math.random() * 2 }}
+        />
+      ))}
+
+      {/* Electric grid lines bg */}
+      <div className="absolute inset-0 pointer-events-none opacity-5"
+        style={{
+          backgroundImage: 'linear-gradient(rgba(0,194,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(0,194,255,0.5) 1px, transparent 1px)',
+          backgroundSize: '40px 40px',
+        }}
+      />
+
+      {/* Landing */}
       <AnimatePresence>
-        {!showInstructions && (
+        {!showHow && (
           <motion.div
             key="landing"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
-            className="flex flex-col items-center justify-center w-full h-full px-8 gap-5"
+            className="flex flex-col items-center justify-center w-full h-full px-8 gap-6"
           >
-            {/* Level Step Icons */}
+            {/* Lightning bolt hero */}
             <motion.div
-              initial={{ y: -30, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.1 }}
-              className="flex gap-3"
+              initial={{ scale: 0, rotate: -20 }}
+              animate={{ scale: 1, rotate: 0 }}
+              transition={{ type: 'spring', bounce: 0.5, delay: 0.1 }}
+              style={{ fontSize: '5rem', lineHeight: 1 }}
+              className="glow-yellow"
             >
-              {LEVEL_ICONS.map((item, i) => (
-                <motion.div
-                  key={item.label}
-                  initial={{ scale: 0, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  transition={{ delay: 0.15 + i * 0.08, type: 'spring' }}
-                  className="w-12 h-12 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center text-xl shadow-sm"
-                  title={item.label}
-                >
-                  {item.icon}
-                </motion.div>
-              ))}
+              ⚡
             </motion.div>
 
             {/* Title */}
             <motion.div
-              initial={{ y: 20, opacity: 0 }}
+              initial={{ y: 30, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.3 }}
+              transition={{ delay: 0.25 }}
               className="text-center"
             >
-              <h1 className="font-display font-bold text-slate-800 leading-tight" style={{ fontSize: 'clamp(2.2rem, 4vw, 3.5rem)' }}>
-                <span className="text-yellow-400 mr-2">⚡</span>
-                Spark City<br />Adventure
+              <h1
+                className="font-display text-white leading-tight text-glow-white"
+                style={{ fontSize: 'clamp(2.8rem, 5vw, 4.2rem)' }}
+              >
+                Spark City<br />
+                <span style={{ color: '#ffd700' }} className="text-glow-yellow">Adventure</span>
               </h1>
-              <p className="text-blue-500 font-bold mt-2" style={{ fontSize: 'clamp(0.9rem, 1.5vw, 1.1rem)' }}>
+              <p
+                className="mt-3 font-bold"
+                style={{ color: '#00c2ff', fontSize: 'clamp(1rem, 1.6vw, 1.25rem)' }}
+              >
                 From Generation to Home Electricity
               </p>
-              <p className="text-slate-400 mt-1 font-medium" style={{ fontSize: 'clamp(0.75rem, 1.2vw, 0.9rem)' }}>
-                Restore electricity to Spark City through 7 interactive missions!
+              <p
+                className="mt-1 font-medium"
+                style={{ color: 'rgba(255,255,255,0.55)', fontSize: 'clamp(0.85rem, 1.2vw, 1rem)' }}
+              >
+                7 interactive science missions for curious minds!
               </p>
             </motion.div>
 
-            {/* CTA Button */}
+            {/* Journey path */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="flex items-center gap-1 flex-wrap justify-center"
+              style={{ maxWidth: '95vw', padding: '0 1rem' }}
+            >
+              {JOURNEY_STEPS.map((s, i) => (
+                <React.Fragment key={s.label}>
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ delay: 0.45 + i * 0.07, type: 'spring' }}
+                    className="flex flex-col items-center gap-1"
+                  >
+                    <div
+                      className="rounded-2xl flex items-center justify-center shadow-lg"
+                      style={{
+                        width: 44, height: 44,
+                        background: `${s.color}22`,
+                        border: `2.5px solid ${s.color}55`,
+                        fontSize: '1.25rem',
+                        boxShadow: `0 0 10px ${s.color}44`,
+                      }}
+                    >
+                      {s.icon}
+                    </div>
+                    <span className="font-bold text-white" style={{ fontSize: '0.62rem', opacity: 0.7 }}>
+                      {s.label}
+                    </span>
+                  </motion.div>
+                  {i < JOURNEY_STEPS.length - 1 && (
+                    <motion.div
+                      initial={{ scaleX: 0 }}
+                      animate={{ scaleX: 1 }}
+                      transition={{ delay: 0.5 + i * 0.07 }}
+                      style={{ color: '#ffd700', fontSize: '1.1rem', marginBottom: 14 }}
+                      className="animate-bounce-arrow"
+                    >
+                      →
+                    </motion.div>
+                  )}
+                </React.Fragment>
+              ))}
+            </motion.div>
+
+            {/* CTA button */}
             <motion.button
-              initial={{ scale: 0.85, opacity: 0 }}
+              initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              transition={{ delay: 0.5, type: 'spring', bounce: 0.4 }}
-              whileHover={{ scale: 1.06 }}
-              whileTap={{ scale: 0.96 }}
-              onClick={handleStart}
-              className="px-10 py-3 rounded-full font-display font-bold text-slate-900 shadow-lg"
+              transition={{ delay: 0.65, type: 'spring', bounce: 0.4 }}
+              whileHover={{ scale: 1.07 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => { setShowHow(true); setStep(0); }}
+              className="game-btn animate-pulse-yellow"
               style={{
-                background: 'linear-gradient(90deg, #fbbf24, #f59e0b)',
-                fontSize: 'clamp(1rem, 1.8vw, 1.25rem)',
-                boxShadow: '0 4px 20px rgba(251,191,36,0.45)',
+                background: 'linear-gradient(135deg, #ffd700, #f59e0b)',
+                fontSize: 'clamp(1.1rem, 1.8vw, 1.4rem)',
+                paddingLeft: '3rem',
+                paddingRight: '3rem',
+                paddingTop: '1rem',
+                paddingBottom: '1rem',
               }}
             >
+              <Zap style={{ width: 22, height: 22 }} />
               Start Adventure!
             </motion.button>
 
-            {/* Volt link */}
-            <motion.div
+            <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 0.7 }}
-              className="flex items-center gap-2 text-slate-400 font-medium"
-              style={{ fontSize: '0.8rem' }}
+              transition={{ delay: 1 }}
+              style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.85rem' }}
             >
-              <span>🤖</span>
-              <span>Meet Volt — Your AI Robot Guide</span>
-            </motion.div>
+              🤖 Volt the Robot will guide you every step!
+            </motion.p>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Instructions Modal */}
+      {/* How to Play modal */}
       <AnimatePresence>
-        {showInstructions && (
+        {showHow && (
           <motion.div
-            key="instructions"
+            key="howto"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="absolute inset-0 flex items-center justify-center z-50"
-            style={{ background: 'rgba(241,245,249,0.6)', backdropFilter: 'blur(6px)' }}
+            style={{ background: 'rgba(5,15,30,0.8)', backdropFilter: 'blur(8px)' }}
           >
             <motion.div
-              initial={{ scale: 0.88, opacity: 0, y: 20 }}
+              initial={{ scale: 0.85, opacity: 0, y: 30 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.88, opacity: 0 }}
+              exit={{ scale: 0.85, opacity: 0 }}
               transition={{ type: 'spring', bounce: 0.3 }}
               className="bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col"
-              style={{ width: 'min(480px, 90vw)', maxHeight: '90%' }}
+              style={{ width: 'min(500px, 92vw)', maxHeight: '90%' }}
             >
               {/* Header */}
-              <div className="px-8 pt-8 pb-4">
-                <h2 className="font-display font-bold text-slate-800 text-2xl">Welcome to Spark City!</h2>
-                <p className="text-slate-400 text-sm mt-1">Learn how electricity travels from power plant to your home</p>
+              <div
+                className="px-8 pt-7 pb-4"
+                style={{ background: 'linear-gradient(135deg, #1e3a5f, #0ea5e9)' }}
+              >
+                <h2 className="font-display text-white" style={{ fontSize: '1.8rem' }}>
+                  ⚡ How to Play
+                </h2>
+                <p className="text-blue-200 font-medium mt-1" style={{ fontSize: '0.95rem' }}>
+                  Learn the basics before you start!
+                </p>
               </div>
 
-              {/* Steps list */}
-              <div className="px-8 pb-6 flex flex-col gap-3 flex-1">
-                {INSTRUCTIONS.map((item, i) => (
+              {/* Steps */}
+              <div className="px-6 py-5 flex flex-col gap-3 flex-1 overflow-auto">
+                {HOW_TO_PLAY.map((item, i) => (
                   <motion.div
                     key={i}
-                    initial={{ x: -10, opacity: 0 }}
-                    animate={{ x: 0, opacity: i <= instrStep ? 1 : 0.35 }}
+                    initial={{ x: -20, opacity: 0 }}
+                    animate={{ x: 0, opacity: i <= step ? 1 : 0.3 }}
                     transition={{ delay: i * 0.06 }}
-                    className={`flex items-center gap-4 p-4 rounded-2xl transition-all ${
-                      i === instrStep
-                        ? 'border-2 border-blue-200 shadow-sm'
-                        : 'border border-transparent'
-                    }`}
+                    className="flex items-center gap-4 p-4 rounded-2xl transition-all"
                     style={{
-                      background: i === instrStep ? '#eff6ff' : 'transparent',
+                      background: i === step ? item.bg : 'transparent',
+                      border: i === step ? `2px solid ${item.bg}` : '2px solid transparent',
+                      boxShadow: i === step ? '0 2px 12px rgba(0,0,0,0.08)' : 'none',
                     }}
                   >
                     <div
-                      className="w-10 h-10 rounded-xl flex items-center justify-center text-xl flex-shrink-0"
-                      style={{ background: item.iconBg }}
+                      className="rounded-2xl flex items-center justify-center flex-shrink-0"
+                      style={{
+                        width: 52, height: 52,
+                        background: item.bg,
+                        fontSize: '1.6rem',
+                        border: i === step ? `2px solid rgba(0,0,0,0.08)` : 'none',
+                      }}
                     >
                       {item.icon}
                     </div>
                     <span
-                      className={`font-medium text-sm ${i === instrStep ? 'text-slate-800' : 'text-slate-400'}`}
+                      className="font-bold"
+                      style={{
+                        fontSize: 'clamp(0.95rem, 1.3vw, 1.1rem)',
+                        color: i === step ? '#1e293b' : '#94a3b8',
+                      }}
                     >
                       {item.text}
                     </span>
@@ -215,15 +269,16 @@ export const StartScreen = () => {
               </div>
 
               {/* Footer */}
-              <div className="px-8 pb-6 flex items-center justify-between">
+              <div className="px-6 pb-6 flex items-center justify-between">
                 <div className="flex gap-2">
-                  {INSTRUCTIONS.map((_, i) => (
+                  {HOW_TO_PLAY.map((_, i) => (
                     <div
                       key={i}
-                      className="w-2 h-2 rounded-full transition-all"
+                      className="rounded-full transition-all"
                       style={{
-                        background: i === instrStep ? '#3b82f6' : '#cbd5e1',
-                        width: i === instrStep ? '1.5rem' : '0.5rem',
+                        height: 8,
+                        width: i === step ? 28 : 8,
+                        background: i === step ? '#0ea5e9' : '#cbd5e1',
                       }}
                     />
                   ))}
@@ -232,13 +287,17 @@ export const StartScreen = () => {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={handleNext}
-                  className="flex items-center gap-2 px-6 py-2.5 rounded-full text-white font-bold text-sm shadow-md"
-                  style={{ background: '#3b82f6' }}
+                  className="flex items-center gap-2 px-7 py-3 rounded-full text-white font-display font-bold shadow-lg"
+                  style={{
+                    background: 'linear-gradient(135deg, #0ea5e9, #3b82f6)',
+                    fontSize: '1.1rem',
+                    boxShadow: '0 4px 15px rgba(14,165,233,0.4)',
+                  }}
                 >
-                  {instrStep < INSTRUCTIONS.length - 1 ? (
-                    <>Next <ChevronRight className="w-4 h-4" /></>
+                  {step < HOW_TO_PLAY.length - 1 ? (
+                    <>Next <ChevronRight style={{ width: 18, height: 18 }} /></>
                   ) : (
-                    <>Play! <ChevronRight className="w-4 h-4" /></>
+                    <>⚡ Let's Go! <ChevronRight style={{ width: 18, height: 18 }} /></>
                   )}
                 </motion.button>
               </div>

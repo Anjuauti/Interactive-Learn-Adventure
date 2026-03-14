@@ -1,106 +1,196 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { initBasicScene } from '../../utils/three-helpers';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useGameStore } from '../../store/game-store';
 import { InfoCard } from '../GameUI';
 
-const STEP_INFOS = [
+/* ── Step definitions ── */
+const STEPS = [
   {
-    title: "Service Pole",
-    icon: "🔌",
-    info: "240V AC comes from the electricity grid through overhead cables. The service pole connects the grid to your home.",
+    title: 'Service Pole & Cable',
+    icon: '🔌',
+    color: '#3b82f6',
+    info: '240V AC arrives from the electricity grid through thick overhead service cables. The utility pole outside is the final grid connection point before your home.',
   },
   {
-    title: "Electric Meter",
-    icon: "⚡",
-    info: "The electric meter measures how many kilowatt-hours (kWh) of electricity your home uses. It tracks consumption for billing. 1 kWh = 1000W used for 1 hour.",
+    title: 'Electric Meter',
+    icon: '📊',
+    color: '#8b5cf6',
+    info: 'The Electric Meter measures kilowatt-hours (kWh) used. 1 kWh = 1000 Watts for 1 hour. The utility company reads this every month to calculate your electricity bill!',
   },
   {
-    title: "Main Switch",
-    icon: "🔴",
-    info: "The Main Switch can instantly cut ALL power to the house in an emergency. Always turn this OFF before doing electrical work!",
+    title: 'Main Switch (Isolator)',
+    icon: '🔴',
+    color: '#ef4444',
+    info: 'The Main Switch instantly cuts ALL electricity to the house. ALWAYS turn this OFF before doing any electrical work — it is your primary safety control!',
   },
   {
-    title: "MCB Panel (Distribution Board)",
-    icon: "🛡️",
-    info: "The MCB (Miniature Circuit Breaker) Panel is mounted inside the home. It has separate MCBs for each room/circuit. If too much current flows, the MCB trips automatically, preventing fires and damage.",
+    title: 'MCB Panel (Distribution Board)',
+    icon: '🛡️',
+    color: '#059669',
+    info: 'The MCB Panel has separate circuit breakers (MCBs) for each room circuit. If too much current flows — a fault or short-circuit — the MCB trips, preventing fires!',
   },
   {
-    title: "The 3 Wires",
-    icon: "🔴🔵🟢",
-    info: "Phase (Brown/Red): Carries live current at 240V. Neutral (Blue): Returns current back to grid. Earth (Green/Yellow): Safety wire — protects you from electric shock if a fault occurs.",
-  }
+    title: '3 Essential Wires',
+    icon: '🔴🔵🟢',
+    color: '#f59e0b',
+    info: 'Every electrical circuit has 3 wires:\n• PHASE (Red/Brown): Live at 240V — never touch!\n• NEUTRAL (Blue): Returns current to the grid.\n• EARTH (Green/Yellow): Safety — diverts fault current to ground.',
+  },
 ];
 
+const buildStep0 = (scene: THREE.Scene) => {
+  // Pole
+  const pole = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.25, 0.3, 13, 12),
+    new THREE.MeshStandardMaterial({ color: 0x4a3020, roughness: 0.9 })
+  );
+  pole.position.set(-10, 6.5, 2);
+  scene.add(pole);
+  // Cross-arm
+  const arm = new THREE.Mesh(new THREE.BoxGeometry(3, 0.2, 0.2), new THREE.MeshStandardMaterial({ color: 0x5a3a20 }));
+  arm.position.set(-10, 11.5, 2);
+  scene.add(arm);
+  // Service wire
+  const curve = new THREE.CatmullRomCurve3([
+    new THREE.Vector3(-10, 11.3, 2),
+    new THREE.Vector3(-7.5, 10.2, 2),
+    new THREE.Vector3(-5.5, 9.4, 2),
+  ]);
+  scene.add(new THREE.Mesh(
+    new THREE.TubeGeometry(curve, 20, 0.06, 8, false),
+    new THREE.MeshStandardMaterial({ color: 0x1a1a1a })
+  ));
+};
+
+const buildStep1 = (scene: THREE.Scene) => {
+  const grp = new THREE.Group();
+  grp.add(
+    Object.assign(
+      new THREE.Mesh(new THREE.BoxGeometry(1.6, 2.8, 0.9), new THREE.MeshStandardMaterial({ color: 0x2c3e50, metalness: 0.3 })),
+      {}
+    )
+  );
+  const dial = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.55, 1.0, 20), new THREE.MeshStandardMaterial({ color: 0xecf0f1 }));
+  dial.rotation.x = Math.PI / 2;
+  dial.position.z = 0.22;
+  grp.add(dial);
+  const needle = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.48, 0.12), new THREE.MeshStandardMaterial({ color: 0xe74c3c }));
+  needle.position.z = 0.73;
+  needle.rotation.z = Math.PI / 5;
+  grp.add(needle);
+  grp.position.set(-8.2, 5, 2);
+  scene.add(grp);
+};
+
+const buildStep2 = (scene: THREE.Scene) => {
+  const sw = new THREE.Mesh(
+    new THREE.BoxGeometry(1, 1.8, 0.6),
+    new THREE.MeshStandardMaterial({ color: 0xe74c3c, emissive: 0x880000, emissiveIntensity: 0.3 })
+  );
+  sw.position.set(-6.5, 5, 2);
+  scene.add(sw);
+  const lever = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.9, 0.2), new THREE.MeshStandardMaterial({ color: 0xffd700 }));
+  lever.position.set(-6.5, 5.8, 2.4);
+  scene.add(lever);
+};
+
+const buildStep3 = (scene: THREE.Scene) => {
+  const panel = new THREE.Mesh(
+    new THREE.BoxGeometry(3.5, 4.5, 0.9),
+    new THREE.MeshStandardMaterial({ color: 0x2c3e50, metalness: 0.2 })
+  );
+  panel.position.set(-4, 5.2, -3.6);
+  scene.add(panel);
+  for (let i = 0; i < 6; i++) {
+    const mcb = new THREE.Mesh(
+      new THREE.BoxGeometry(0.45, 0.9, 0.5),
+      new THREE.MeshStandardMaterial({
+        color: i % 2 === 0 ? 0x22c55e : 0xf59e0b,
+        emissive: i % 2 === 0 ? 0x22c55e : 0xf59e0b,
+        emissiveIntensity: 0.25,
+      })
+    );
+    mcb.position.set(-5.2 + i * 0.52, 5.2, -3.2);
+    scene.add(mcb);
+  }
+};
+
+const buildStep4 = (scene: THREE.Scene) => {
+  const wireColors = [0xdc2626, 0x2563eb, 0x16a34a];
+  const yOffsets = [0, 0.22, -0.22];
+  wireColors.forEach((col, i) => {
+    const curve = new THREE.CatmullRomCurve3([
+      new THREE.Vector3(-4, 5, -3.2),
+      new THREE.Vector3(-1, 5 + yOffsets[i] * 3, -3),
+      new THREE.Vector3(2, 7, -3),
+      new THREE.Vector3(5, 7, -3),
+    ]);
+    scene.add(new THREE.Mesh(
+      new THREE.TubeGeometry(curve, 20, 0.07, 8, false),
+      new THREE.MeshStandardMaterial({ color: col, emissive: col, emissiveIntensity: 0.4 })
+    ));
+  });
+};
+
+const BUILDERS = [buildStep0, buildStep1, buildStep2, buildStep3, buildStep4];
+
+/* ── Component ── */
 export const Level5House = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const { setVoltMessage, setLevelComplete, addScore, addStar } = useGameStore();
   const [step, setStep] = useState(0);
-  
-  const matsRef = useRef<THREE.MeshStandardMaterial[]>([]);
   const sceneRef = useRef<THREE.Scene | null>(null);
 
+  /* ── One-time scene init ── */
   useEffect(() => {
-    setVoltMessage("Let's see how electricity safely enters your house. Click 'Next Step' to build the connection.");
+    setVoltMessage("🏠 Trace how electricity safely enters your HOME! Tap 'Next Step' to build each connection.");
 
     if (!containerRef.current) return;
     const { scene, camera, renderer, controls, cleanup } = initBasicScene(containerRef.current);
     sceneRef.current = scene;
-    
-    camera.position.set(0, 8, 22);
+
+    scene.background = new THREE.Color(0xddeeff);
+    scene.fog = new THREE.FogExp2(0xddeeff, 0.018);
+    camera.position.set(0, 9, 24);
     controls.target.set(0, 4, 0);
 
-    // Build realistic house cross-section
-    const floor = new THREE.Mesh(
-      new THREE.BoxGeometry(16, 0.5, 8),
-      new THREE.MeshStandardMaterial({ color: 0xe8d5b7, roughness: 0.8 })
-    );
-    floor.position.set(0, 0, 0);
-    scene.add(floor);
+    const wallMat = new THREE.MeshStandardMaterial({ color: 0xf5efe6 });
 
-    const backWall = new THREE.Mesh(
-      new THREE.BoxGeometry(16, 8, 0.5),
-      new THREE.MeshStandardMaterial({ color: 0xf0e6d3 })
-    );
-    backWall.position.set(0, 4.25, -3.75);
-    scene.add(backWall);
+    // Floor
+    scene.add(Object.assign(
+      new THREE.Mesh(new THREE.BoxGeometry(16, 0.5, 8), new THREE.MeshStandardMaterial({ color: 0xe8d5b7, roughness: 0.8 })),
+      { position: new THREE.Vector3(0, 0, 0) }
+    ));
 
-    const sideWallL = new THREE.Mesh(
-      new THREE.BoxGeometry(0.5, 8, 8),
-      new THREE.MeshStandardMaterial({ color: 0xe8ddd0 })
-    );
-    sideWallL.position.set(-7.75, 4.25, 0);
-    scene.add(sideWallL);
+    // Walls
+    const addBox = (w: number, h: number, d: number, x: number, y: number, z: number, mat = wallMat) => {
+      const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat);
+      m.position.set(x, y, z);
+      m.castShadow = true; m.receiveShadow = true;
+      scene.add(m);
+    };
+    addBox(16, 8, 0.5, 0, 4.25, -3.75);
+    addBox(0.5, 8, 8, -7.75, 4.25, 0);
+    addBox(0.5, 8, 8, 7.75, 4.25, 0);
+    addBox(0.2, 8, 6, -2, 4.25, -1);
+    addBox(0.2, 8, 6, 3, 4.25, -1);
 
-    const sideWallR = new THREE.Mesh(
-      new THREE.BoxGeometry(0.5, 8, 8),
-      new THREE.MeshStandardMaterial({ color: 0xe8ddd0 })
-    );
-    sideWallR.position.set(7.75, 4.25, 0);
-    scene.add(sideWallR);
-
-    // Inner walls for 3 rooms
-    const innerWall1 = new THREE.Mesh(
-      new THREE.BoxGeometry(0.2, 8, 6),
-      new THREE.MeshStandardMaterial({ color: 0xf0e6d3 })
-    );
-    innerWall1.position.set(-2, 4.25, -1);
-    scene.add(innerWall1);
-
-    const innerWall2 = new THREE.Mesh(
-      new THREE.BoxGeometry(0.2, 8, 6),
-      new THREE.MeshStandardMaterial({ color: 0xf0e6d3 })
-    );
-    innerWall2.position.set(3, 4.25, -1);
-    scene.add(innerWall2);
-
-    const roof = new THREE.Mesh(
-      new THREE.ConeGeometry(12, 4, 4),
-      new THREE.MeshStandardMaterial({ color: 0xc0392b })
-    );
+    // Roof
+    const roof = new THREE.Mesh(new THREE.ConeGeometry(12, 4, 4), new THREE.MeshStandardMaterial({ color: 0xb03020 }));
     roof.rotation.y = Math.PI / 4;
     roof.position.set(0, 10.25, 0);
+    roof.castShadow = true;
     scene.add(roof);
+
+    // Grass
+    const grass = new THREE.Mesh(new THREE.PlaneGeometry(60, 40), new THREE.MeshStandardMaterial({ color: 0x6ab04c, roughness: 0.9 }));
+    grass.rotation.x = -Math.PI / 2;
+    grass.position.y = -0.28;
+    scene.add(grass);
+
+    // Build step 0 on mount
+    BUILDERS[0](scene);
 
     let frameId: number;
     const animate = () => {
@@ -113,142 +203,128 @@ export const Level5House = () => {
     return () => {
       cancelAnimationFrame(frameId);
       cleanup();
+      sceneRef.current = null;
     };
   }, []);
 
+  /* ── Build each subsequent step ── */
   useEffect(() => {
+    if (step === 0) return; // step 0 built during init
     const scene = sceneRef.current;
     if (!scene) return;
-
-    if (step === 0) {
-      const poleMat = new THREE.MeshStandardMaterial({ color: 0x4a4a4a });
-      const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.3, 12), poleMat);
-      pole.position.set(-10, 6, 2);
-      scene.add(pole);
-
-      const wireGeo = new THREE.CylinderGeometry(0.05, 0.05, 6);
-      const wireMat = new THREE.MeshStandardMaterial({ color: 0x5c4033 });
-      const wire = new THREE.Mesh(wireGeo, wireMat);
-      wire.position.set(-7.5, 9, 2);
-      wire.rotation.z = Math.PI / 2 - 0.2;
-      scene.add(wire);
-      matsRef.current.push(poleMat);
+    if (step < BUILDERS.length) {
+      BUILDERS[step](scene);
     }
-    else if (step === 1) {
-      const meterGroup = new THREE.Group();
-      const meterMat = new THREE.MeshStandardMaterial({ color: 0x2c3e50 });
-      const meterBox = new THREE.Mesh(new THREE.BoxGeometry(1.5, 2.5, 0.8), meterMat);
-      
-      const faceGeo = new THREE.CylinderGeometry(0.5, 0.5, 0.9, 16);
-      const faceMat = new THREE.MeshStandardMaterial({ color: 0xecf0f1 });
-      const face = new THREE.Mesh(faceGeo, faceMat);
-      face.rotation.x = Math.PI / 2;
-      face.position.z = 0.2;
 
-      meterGroup.add(meterBox);
-      meterGroup.add(face);
-      meterGroup.position.set(-8.2, 4, 2);
-      scene.add(meterGroup);
-    }
-    else if (step === 2) {
-      const switchMat = new THREE.MeshStandardMaterial({ color: 0xe74c3c });
-      const mainSwitch = new THREE.Mesh(new THREE.BoxGeometry(1, 1.5, 0.5), switchMat);
-      mainSwitch.position.set(-6, 4, 1);
-      scene.add(mainSwitch);
-    }
-    else if (step === 3) {
-      const mcbGroup = new THREE.Group();
-      const mcbMat = new THREE.MeshStandardMaterial({ color: 0x34495e });
-      const panel = new THREE.Mesh(new THREE.BoxGeometry(3, 4, 0.8), mcbMat);
-      mcbGroup.add(panel);
+    // Update messages and completion
+    const msgs = [
+      "🔌 The SERVICE POLE connects the grid to your home. 240V AC comes through overhead cables!",
+      "📊 The ELECTRIC METER counts every kilowatt-hour (kWh) you use. It's how your electricity bill is calculated!",
+      "🔴 The MAIN SWITCH cuts ALL power. Always turn it OFF before doing electrical work — safety first!",
+      "🛡️ The MCB PANEL has separate breakers per room. They TRIP to prevent fires when there's a fault!",
+      "⭐ THREE WIRES: Phase (live), Neutral (return), Earth (safety). You've traced the complete path of electricity!",
+    ];
+    setVoltMessage(msgs[step]);
 
-      for(let i=0; i<6; i++) {
-        const switchLever = new THREE.Mesh(
-          new THREE.BoxGeometry(0.2, 0.4, 0.9),
-          new THREE.MeshStandardMaterial({ color: 0x95a5a6 })
-        );
-        switchLever.position.set(-1 + (i * 0.4), 0, 0);
-        mcbGroup.add(switchLever);
-      }
-      
-      mcbGroup.position.set(-4, 5, -3.2);
-      scene.add(mcbGroup);
-    }
-    else if (step === 4) {
-      const createWireCurve = (color: number, offset: number) => {
-        const curve = new THREE.CatmullRomCurve3([
-          new THREE.Vector3(-4, 5 + offset, -3),
-          new THREE.Vector3(0, 5 + offset, -3),
-          new THREE.Vector3(0, 7 + offset, -3),
-          new THREE.Vector3(5, 7 + offset, -3)
-        ]);
-        const tubeGeo = new THREE.TubeGeometry(curve, 20, 0.05, 8, false);
-        const tubeMat = new THREE.MeshStandardMaterial({ color });
-        const tube = new THREE.Mesh(tubeGeo, tubeMat);
-        scene.add(tube);
-      };
-
-      createWireCurve(0xe74c3c, 0);    // Phase
-      createWireCurve(0x3498db, 0.2);  // Neutral
-      createWireCurve(0x27ae60, -0.2); // Earth
-
-      setVoltMessage("Excellent! You've traced the power into the house. Now you know how it's distributed safely.");
+    if (step === BUILDERS.length - 1) {
       setLevelComplete(true);
-      addScore(50);
+      addScore(100);
       addStar();
     }
-
   }, [step]);
 
+  const currentStep = STEPS[step];
+
   return (
-    <div className="w-full h-screen relative">
+    <div className="w-full h-full relative">
       <div ref={containerRef} className="absolute inset-0 z-0" />
-      
-      <div className="absolute right-8 top-32 z-10 flex flex-col gap-6 pointer-events-auto w-[24rem]">
-        <InfoCard 
-          title={STEP_INFOS[step].title} 
-          icon={STEP_INFOS[step].icon}
-          colorClass="from-indigo-500 to-purple-500"
-          borderColor="border-purple-200"
-        >
-          <p>{STEP_INFOS[step].info}</p>
-          
-          {step === 4 && (
-            <div className="flex flex-col gap-2 mt-4 text-sm">
-              <span className="bg-red-100 text-red-800 px-3 py-1 rounded-md font-bold border border-red-200">🔴 Phase Wire - 240V Live</span>
-              <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-md font-bold border border-blue-200">🔵 Neutral Wire - Return Path</span>
-              <span className="bg-green-100 text-green-800 px-3 py-1 rounded-md font-bold border border-green-200">🟢 Earth Wire - Safety</span>
+
+      {/* Right panel */}
+      <div
+        className="absolute right-3 top-14 z-10 flex flex-col gap-3 pointer-events-auto"
+        style={{ width: 'clamp(220px, 25vw, 300px)' }}
+      >
+        {/* Step info */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={step}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            transition={{ duration: 0.3 }}
+          >
+            <InfoCard title={currentStep.title} icon={currentStep.icon} colorClass="from-indigo-600 to-violet-500">
+              <p style={{ whiteSpace: 'pre-line' }}>{currentStep.info}</p>
+
+              {step === STEPS.length - 1 && (
+                <div className="flex flex-col gap-1.5 mt-3">
+                  {[
+                    { bg: '#fee2e2', dot: '#dc2626', text: 'Phase Wire — 240V LIVE!', textCol: '#991b1b' },
+                    { bg: '#dbeafe', dot: '#2563eb', text: 'Neutral Wire — Return Path', textCol: '#1e40af' },
+                    { bg: '#dcfce7', dot: '#16a34a', text: 'Earth Wire — Safety Ground', textCol: '#15803d' },
+                  ].map((w) => (
+                    <div
+                      key={w.text}
+                      className="flex items-center gap-2.5 rounded-lg px-2.5 py-1.5"
+                      style={{ background: w.bg }}
+                    >
+                      <div
+                        className="rounded-full flex-shrink-0"
+                        style={{ width: 14, height: 14, background: w.dot, boxShadow: `0 0 8px ${w.dot}` }}
+                      />
+                      <span className="font-bold" style={{ color: w.textCol, fontSize: '0.88rem' }}>{w.text}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </InfoCard>
+          </motion.div>
+        </AnimatePresence>
+
+        {/* Progress bar and Next button */}
+        <div className="game-panel">
+          <h3 className="font-display font-bold text-slate-800 mb-3" style={{ fontSize: '1rem' }}>Installation Progress</h3>
+          <div className="flex justify-between mb-4">
+            {STEPS.map((s, i) => (
+              <div key={i} className="flex flex-col items-center gap-1">
+                <div
+                  className="rounded-full flex items-center justify-center font-display font-bold"
+                  style={{
+                    width: 32, height: 32, fontSize: '0.82rem',
+                    background: i < step ? '#059669' : i === step ? s.color : '#e2e8f0',
+                    color: i <= step ? 'white' : '#94a3b8',
+                    boxShadow: i === step ? `0 0 14px ${s.color}88` : 'none',
+                    transition: 'all 0.35s ease',
+                  }}
+                >
+                  {i < step ? '✓' : i + 1}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {step < STEPS.length - 1 ? (
+            <motion.button
+              whileHover={{ scale: 1.04 }}
+              whileTap={{ scale: 0.96 }}
+              onClick={() => setStep(s => s + 1)}
+              className="w-full py-3 rounded-xl font-display font-bold text-white shadow-md"
+              style={{
+                background: `linear-gradient(135deg, ${currentStep.color}, ${currentStep.color}cc)`,
+                fontSize: '1.1rem',
+                boxShadow: `0 4px 15px ${currentStep.color}55`,
+              }}
+            >
+              Next Step ➡
+            </motion.button>
+          ) : (
+            <div
+              className="text-center py-3 rounded-xl font-display font-bold"
+              style={{ background: '#f0fdf4', color: '#059669', fontSize: '1.05rem' }}
+            >
+              ⭐ All Steps Complete!
             </div>
           )}
-        </InfoCard>
-
-        <div className="bg-white p-0 rounded-2xl overflow-hidden shadow-md border border-slate-200">
-          <div className="bg-slate-100 px-5 py-3 border-b border-slate-200">
-            <h3 className="text-xl font-display text-slate-800 font-bold">Installation Progress</h3>
-          </div>
-          <div className="p-5">
-            <div className="flex justify-between mb-6">
-              {[0, 1, 2, 3, 4].map(i => (
-                <div key={i} className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${i <= step ? 'bg-purple-500 text-white shadow-md' : 'bg-slate-200 text-slate-400'}`}>
-                  {i+1}
-                </div>
-              ))}
-            </div>
-
-            {step < 4 && (
-              <button 
-                onClick={() => setStep(s => s + 1)}
-                className="w-full py-4 bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-400 hover:to-indigo-400 text-white font-display font-bold text-2xl rounded-xl shadow-md active:scale-95 transition-transform"
-              >
-                NEXT STEP ➡
-              </button>
-            )}
-            {step === 4 && (
-              <div className="text-center py-3 bg-green-50 text-green-600 font-bold rounded-xl border border-green-200 text-lg">
-                Sequence Complete!
-              </div>
-            )}
-          </div>
         </div>
       </div>
     </div>

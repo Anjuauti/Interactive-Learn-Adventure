@@ -1,0 +1,351 @@
+You are a senior software engineer with 8–9 years of experience building educational interactive simulations and WebGL applications.
+
+Modify the existing repository:
+
+https://github.com/Anjuauti/Interactive-Learn-Adventure.git
+
+and transform it into a complete advanced 3D educational game called:
+
+Spark City Adventure – From Generation to Home Electricity
+
+This game will run in a Science Park Exhibit and must teach children how electricity is generated and delivered to homes.
+
+The project must improve the existing UI and gameplay shown in the images and maintain the same layout structure but make it more interactive, educational, and visually engaging.
+
+IMPORTANT: KEEP THE CURRENT UI STRUCTURE
+
+Keep the UI similar to the images:
+
+• Level map screen
+• Small step flow components
+• Wiring simulator layout
+• Right-side component toolbox
+• Volt assistant messages
+
+But enhance them with better visuals, larger fonts, and interactive 3D elements.
+
+GLOBAL UI IMPROVEMENTS
+
+Improve the UI for science exhibit screens.
+
+Requirements:
+
+• Large readable fonts
+• Bright colorful design
+• Kid-friendly interface
+• Clear instructions at every step
+• Smooth animations
+
+UI must be readable from 2–3 meters away.
+
+Add:
+
+• glowing arrows showing next action
+• hover animations
+• sound feedback for correct actions
+
+GAME FLOW
+
+The game should clearly demonstrate the journey of electricity:
+
+Hydroelectric Dam
+↓
+Generator
+↓
+Transformer
+↓
+Transmission Lines
+↓
+Substation
+↓
+Service Wire
+↓
+Electric Meter
+↓
+MCB Panel
+↓
+Home Wiring
+↓
+Appliances
+
+Each level must show electricity visually flowing between systems.
+
+LEVEL 1 — HYDROELECTRIC DAM
+
+Create a realistic 3D model of a hydroelectric power plant.
+
+Components:
+
+• Water reservoir
+• Dam gate
+• Flowing water
+• Turbine
+• Generator
+
+When the user opens the dam gate:
+
+Water flows → spins turbine → turbine rotates generator.
+
+Explain:
+
+• kinetic energy of water
+• mechanical energy
+• electromagnetic induction
+
+Show animated AC current generation.
+
+Volt should explain:
+
+“Generators convert mechanical energy into electrical energy using magnetic fields.”
+
+LEVEL 2 — GENERATOR MECHANISM
+
+Show a cutaway 3D generator model.
+
+Components:
+
+• rotor
+• stator
+• copper coils
+• rotating shaft
+
+Animation should show:
+
+rotating magnet → induced current in coils.
+
+Display AC waveform animation.
+
+LEVEL 3 — TRANSMISSION LINES
+
+Show realistic transmission towers and power lines.
+
+Explain:
+
+Why electricity is transmitted at high voltage.
+
+User task:
+
+Repair broken power lines.
+
+Electricity should visually flow along the wires.
+
+LEVEL 4 — SUBSTATION
+
+Show step-down transformer system.
+
+Components:
+
+• transformer
+• circuit breakers
+• control switches
+
+User task:
+
+Adjust voltage controls.
+
+Explain how transformers reduce voltage for safe distribution.
+
+LEVEL 5 — ELECTRICITY ENTERS HOUSE
+
+Show service wire → electric meter → MCB panel.
+
+Use realistic 3D models for:
+
+• electric meter
+• MCB panel
+
+Display the small UI flow like the first image:
+
+Service Wire → Electric Meter → MCB Panel
+
+When electricity reaches the meter:
+
+Explain:
+
+“The electric meter measures electricity usage in kilowatt hours.”
+
+When electricity reaches the MCB:
+
+Explain:
+
+“MCB protects the house from overload and short circuits.”
+
+HOME WIRING INFORMATION
+
+Show a panel explaining the three wires:
+
+Phase wire (Red)
+Neutral wire (Blue)
+Earth wire (Green)
+
+Explain:
+
+• purpose of each wire
+• copper conductor
+• insulation material
+
+LEVEL 6 — HOME WIRING SIMULATOR
+
+Use the layout similar to the second image.
+
+Create three rooms:
+
+Hall
+Bedroom
+Kitchen
+
+Each room should have 3 components only.
+
+Hall:
+
+• bulb
+• fan
+• TV
+
+Bedroom:
+
+• bulb
+• fan
+• TV
+
+Kitchen:
+
+• bulb
+• refrigerator
+• washing machine
+
+These components must appear in the right-side toolbox panel.
+
+COMPONENT INSTALLATION
+
+Users drag components into the room.
+
+After installation:
+
+User must connect wires from:
+
+MCB → switchboard → appliance.
+
+Incorrect wiring must show an error explanation.
+
+SWITCH CONTROL
+
+After components are installed:
+
+Show a switch panel on the right side.
+
+Each switch controls an appliance.
+
+Example:
+
+Light switch
+Fan switch
+TV switch
+
+When the user turns on a switch:
+
+The appliance should activate in the 3D house model.
+
+Examples:
+
+• light glows
+• fan rotates
+• TV turns on
+• fridge lights up
+• washing machine rotates
+
+3D HOME VISUALIZATION
+
+After installation is complete:
+
+Show a 3D house model.
+
+When switches are toggled:
+
+Electricity flows from the MCB through wires to appliances.
+
+Appliances animate in real time.
+
+POWER CONSUMPTION LEVEL
+
+Show power consumption values:
+
+Bulb – 9W
+Fan – 70W
+TV – 120W
+Fridge – 300W
+Washing Machine – 500W
+
+Update a live energy meter when devices turn on.
+
+ERROR HANDLING
+
+If user makes mistakes:
+
+Show helpful messages explaining the science.
+
+Examples:
+
+Wrong wiring
+Short circuit
+Transformer overload
+
+REWARD SYSTEM
+
+Correct actions give:
+
+⭐ stars
+⚡ energy points
+
+Wrong actions reduce points but show hints.
+
+FINAL LEVEL
+
+Show a fully powered 3D home.
+
+Electricity animation flows from:
+
+power plant → grid → house → appliances.
+
+Display message:
+
+“Congratulations! You restored electricity to Spark City!”
+
+EDUCATIONAL SUMMARY
+
+Show what the player learned:
+
+• electricity generation
+• generators and turbines
+• transmission lines
+• transformers
+• MCB safety
+• home wiring
+• appliance power usage
+
+TECH STACK
+
+Use:
+
+React
+Three.js
+React Three Fiber
+WebGL
+
+Optimize for touchscreen science exhibits.
+
+IMPORTANT
+
+Maintain the same repo structure, but enhance the components and add new 3D scenes.
+
+Ensure:
+
+• modular React components
+• reusable UI
+• optimized 3D models
+
+FINAL GOAL
+
+Create a high-quality interactive science learning game where children visually understand how electricity travels from power plants to household appliances.
+
+The experience should feel like a modern educational adventure game used in science museums.

@@ -51,6 +51,28 @@ Every package extends `tsconfig.base.json` which sets `composite: true`. The roo
 
 ## Packages
 
+### `artifacts/spark-city` (`@workspace/spark-city`)
+
+Museum-quality interactive educational game about electricity. Built with React + Vite + TypeScript. 7 sequential levels:
+
+1. **Level 1 — Hydroelectric Dam**: R3F Canvas. Click gate → water flows → turbine spins → generator glows. Teaches PE/KE/Faraday's Law.
+2. **Level 2 — Generator**: R3F Canvas. Rotor/stator electromagnetic induction animation with AC waveform SVG overlay.
+3. **Level 3 — Transmission Lines**: R3F Canvas. Click 3 towers in sequence to string power lines. Teaches high-voltage transmission loss reduction.
+4. **Level 4 — Substation**: R3F Canvas. Click circuit breaker → animated voltage countdown 132kV → 11kV. Teaches step-down transformers.
+5. **Level 5 — Home Entry**: Plain Three.js (`initBasicScene`). 5-step progressive build: pole → meter → main switch → MCB panel → 3 wires.
+6. **Level 6 — Home Wiring**: Plain Three.js. 3-room system (Hall/Bedroom/Kitchen) with per-room switch panel. Teaches parallel circuits.
+7. **Level 7 — Consumption**: Plain Three.js dark scene. 5 appliances with live watt meter (LED 9W, Fan 70W, TV 120W, Fridge 300W, Washer 500W).
+
+**Key design rules**:
+- Right panel width: `clamp(220px, 24vw, 300px)`
+- Volt Guide: 64px 🤖 in glowing blue circle, bottom-left
+- Font: Fredoka One (display), Fredoka (body), base 18px
+- Dark space theme on Start/Final screens; themed backgrounds per level
+- Touch-friendly `.big-switch` components (72×40px)
+- Exhibit-quality CSS in `index.css` with glow animations
+
+**Workflow**: `PORT=21735 BASE_PATH=/ pnpm --filter @workspace/spark-city run dev`
+
 ### `artifacts/api-server` (`@workspace/api-server`)
 
 Express 5 API server. Routes live in `src/routes/` and use `@workspace/api-zod` for request and response validation and `@workspace/db` for persistence.
