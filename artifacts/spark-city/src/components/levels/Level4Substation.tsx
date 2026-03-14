@@ -1,143 +1,93 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
+import { Canvas, useFrame } from '@react-three/fiber';
+import { OrbitControls, Environment } from '@react-three/drei';
 import * as THREE from 'three';
-import { initBasicScene } from '../../utils/three-helpers';
 import { useGameStore } from '../../store/game-store';
 import { InfoCard } from '../GameUI';
 
 export const Level4Substation = () => {
-  const containerRef = useRef<HTMLDivElement>(null);
   const { setVoltMessage, setLevelComplete, addScore, addStar } = useGameStore();
-  const [voltage, setVoltage] = useState(33); // Start high
-  const activeGlowRef = useRef<THREE.MeshStandardMaterial | null>(null);
+  const [breakerOn, setBreakerOn] = useState(false);
+  const [voltage, setVoltage] = useState(132);
 
   useEffect(() => {
-    setVoltMessage("We reached the city limits! Use the Step-Down Transformer dial to reduce the voltage for the neighborhood (Target: 11kV).");
+    setVoltMessage("Click the circuit breaker to step down the voltage for the neighborhood!");
+  }, [setVoltMessage]);
 
-    if (!containerRef.current) return;
-    const { scene, camera, renderer, controls, cleanup } = initBasicScene(containerRef.current);
+  const handleBreaker = () => {
+    if (breakerOn) return;
+    setBreakerOn(true);
+    setVoltMessage("Breaker closed! Transforming voltage...");
     
-    camera.position.set(0, 10, 20);
-
-    // Transformer Box
-    const transGeo = new THREE.BoxGeometry(8, 6, 6);
-    const transMat = new THREE.MeshStandardMaterial({ color: 0x445566, metalness: 0.6 });
-    const transBox = new THREE.Mesh(transGeo, transMat);
-    transBox.position.set(-5, 3, 0);
-    scene.add(transBox);
-
-    // Insulators
-    for(let i=0; i<3; i++) {
-      const insGeo = new THREE.CylinderGeometry(0.3, 0.5, 2, 8);
-      const insMat = new THREE.MeshStandardMaterial({ color: 0xaa5555, roughness: 1 });
-      const ins = new THREE.Mesh(insGeo, insMat);
-      ins.position.set(-7 + i*2, 7, 0);
-      scene.add(ins);
-    }
-
-    // Output Power Lines to City
-    const cityGeo = new THREE.BoxGeometry(4, 4, 4);
-    const cityMat = new THREE.MeshStandardMaterial({ color: 0x222222 });
-    const city = new THREE.Mesh(cityGeo, cityMat);
-    city.position.set(8, 2, 0);
-    scene.add(city);
-
-    // Glow wire
-    const wireGeo = new THREE.CylinderGeometry(0.2, 0.2, 10);
-    const wireMat = new THREE.MeshStandardMaterial({ color: 0xff0000, emissive: 0xff0000 });
-    activeGlowRef.current = wireMat;
-    const wire = new THREE.Mesh(wireGeo, wireMat);
-    wire.rotation.z = Math.PI / 2;
-    wire.position.set(1.5, 3, 0);
-    scene.add(wire);
-
-    let frameId: number;
-    const animate = () => {
-      frameId = requestAnimationFrame(animate);
-      controls.update();
-      renderer.render(scene, camera);
-    };
-    animate();
-
-    return () => {
-      cancelAnimationFrame(frameId);
-      cleanup();
-    };
-  }, []);
-
-  useEffect(() => {
-    if (activeGlowRef.current) {
-      if (voltage > 15) {
-        activeGlowRef.current.emissive.setHex(0xff0000); // Red - Danger
-      } else if (voltage < 10) {
-        activeGlowRef.current.emissive.setHex(0x333333); // Off - Underpowered
-      } else {
-        activeGlowRef.current.emissive.setHex(0x00ff00); // Green - Perfect
-      }
-    }
-
-    const checkTimer = setTimeout(() => {
-      if (voltage >= 10 && voltage <= 15) {
-        setVoltMessage("Perfect! 11kV is safe for distribution around the local streets.");
+    let v = 132;
+    const interval = setInterval(() => {
+      v -= 5;
+      if (v <= 11) {
+        v = 11;
+        clearInterval(interval);
+        setVoltMessage("⭐ Voltage safely stepped down to 11kV for local distribution!");
         setLevelComplete(true);
-        addScore(50);
+        addScore(100);
         addStar();
-      } else if (voltage > 15) {
-        setVoltMessage("Too high! You'll blow out the neighborhood circuits!");
-        setLevelComplete(false);
-      } else {
-        setVoltMessage("Too low! The neighborhood won't have enough power.");
-        setLevelComplete(false);
       }
-    }, 1000);
-
-    return () => clearTimeout(checkTimer);
-  }, [voltage, setVoltMessage, setLevelComplete, addScore, addStar]);
+      setVoltage(v);
+    }, 100);
+  };
 
   return (
-    <div className="w-full h-screen relative">
-      <div ref={containerRef} className="absolute inset-0 z-0" />
-      
-      <div className="absolute right-8 top-32 z-10 flex flex-col gap-6 w-[22rem]">
-        <InfoCard 
-          title="Step-Down Substation" 
-          icon="🏭"
-          colorClass="from-green-500 to-teal-400"
-          borderColor="border-green-400"
+    <div className="w-full h-full relative">
+      <Canvas style={{ width: '100%', height: '100%' }}>
+        <ambientLight intensity={0.4} />
+        <directionalLight position={[10, 10, 5]} intensity={1} castShadow />
+        <Environment preset="city" />
+        <OrbitControls enablePan={false} minDistance={5} maxDistance={20} maxPolarAngle={Math.PI / 2.2} />
+
+        <mesh position={[0, -0.1, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+          <planeGeometry args={[30, 30]} />
+          <meshStandardMaterial color="#aaaaaa" />
+        </mesh>
+
+        {/* Step-down Transformer */}
+        <mesh position={[0, 2, 0]}>
+          <boxGeometry args={[4, 4, 4]} />
+          <meshStandardMaterial color="#556677" />
+        </mesh>
+        
+        {/* Coils indication */}
+        <mesh position={[0, 4.5, 0]}>
+          <cylinderGeometry args={[0.5, 0.5, 1, 16]} />
+          <meshStandardMaterial color={breakerOn ? "#00ffff" : "#aa5555"} emissive={breakerOn ? "#00ffff" : "#000000"} />
+        </mesh>
+
+        {/* Circuit Breaker */}
+        <mesh 
+          position={[-4, 1, 2]} 
+          onClick={handleBreaker}
+          onPointerOver={() => document.body.style.cursor = 'pointer'}
+          onPointerOut={() => document.body.style.cursor = 'default'}
         >
-          <p>High voltage is great for travel, but dangerous for homes.</p>
-          <p>A <strong className="text-teal-600">Step-Down Transformer</strong> lowers the voltage significantly before it enters residential areas.</p>
+          <boxGeometry args={[1, 2, 1]} />
+          <meshStandardMaterial color="#333333" />
+        </mesh>
+        <mesh position={[-4, breakerOn ? 1 : 1.5, 2.6]} rotation={[breakerOn ? 0 : -Math.PI/4, 0, 0]}>
+          <boxGeometry args={[0.2, 1, 0.2]} />
+          <meshStandardMaterial color={breakerOn ? "#00ff00" : "#ff0000"} />
+        </mesh>
+      </Canvas>
+
+      <div className="absolute right-4 top-16 z-10 flex flex-col gap-3 pointer-events-auto" style={{ width: 'clamp(190px, 21vw, 265px)' }}>
+        <InfoCard title="Substation" icon="🏢">
+          <p><strong>Step-Down:</strong> High transmission voltages (132kV) are too dangerous for homes.</p>
+          <p><strong>Transformers:</strong> They lower the voltage to 11kV for local streets, then eventually to 240V for houses.</p>
+          <p><strong>Safety:</strong> Circuit breakers protect the grid from faults and overloads.</p>
         </InfoCard>
 
-        <div className="glass-panel p-0 rounded-2xl text-center pointer-events-auto overflow-hidden">
-          <div className="bg-gradient-to-r from-slate-800 to-slate-700 px-5 py-3 border-b border-white/10">
-            <h3 className="text-xl font-display text-white font-bold">Voltage Dial (kV)</h3>
+        <div className="game-panel">
+          <h3 className="font-display font-bold text-slate-800 mb-2">Voltage Display</h3>
+          <div className="text-3xl font-display font-bold text-center text-cyan-500 glow-accent p-4 rounded bg-slate-900">
+            {voltage} kV
           </div>
-          <div className="p-6">
-            <div className={`w-32 h-32 mx-auto rounded-full flex items-center justify-center mb-6 border-4 shadow-inner bg-slate-900 ${
-              voltage >= 10 && voltage <= 15 
-                ? 'border-green-400 shadow-[0_0_20px_rgba(0,255,0,0.4)]' 
-                : voltage > 15 
-                  ? 'border-red-500 shadow-[0_0_20px_rgba(255,0,0,0.4)]' 
-                  : 'border-slate-500'
-            }`}>
-              <h2 className={`text-4xl font-display font-bold ${voltage >= 10 && voltage <= 15 ? 'text-green-400 text-glow-cyan' : voltage > 15 ? 'text-red-500' : 'text-slate-400'}`}>
-                {voltage}
-              </h2>
-            </div>
-            
-            <input 
-              type="range" 
-              min="1" max="33" 
-              value={voltage}
-              onChange={(e) => setVoltage(parseInt(e.target.value))}
-              className="mb-2"
-            />
-            <div className="flex justify-between text-slate-400 text-xs font-bold px-1">
-              <span>Low</span>
-              <span className="text-green-400">11kV Target</span>
-              <span>High</span>
-            </div>
-          </div>
+          <div className="text-xs text-center text-slate-500 mt-2 font-bold">Target: 11 kV</div>
         </div>
       </div>
     </div>

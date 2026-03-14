@@ -38,17 +38,17 @@ export const GameHUD = () => {
 
         {/* Score & Stars — top right */}
         <div className="flex items-center gap-3 pointer-events-auto">
-          <div className="game-panel !py-2 !px-4 flex items-center gap-2">
-            <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-            <span className="font-bold text-slate-700">{stars}</span>
+          <div className="flex items-center gap-1 game-panel !py-1.5 !px-3">
+            <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+            <span className="font-bold text-slate-700 text-sm">{stars}</span>
           </div>
-          <div className="game-panel !py-2 !px-4 flex items-center gap-2">
-            <Zap className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+          <div className="flex items-center gap-1 game-panel !py-1.5 !px-3">
+            <Zap className="w-4 h-4 fill-yellow-400 text-yellow-400" />
             <motion.span
               key={score}
               initial={{ scale: 1.4, color: '#f59e0b' }}
               animate={{ scale: 1, color: '#334155' }}
-              className="font-bold text-slate-700"
+              className="font-bold text-slate-700 text-sm"
             >
               {score}
             </motion.span>
@@ -68,9 +68,9 @@ export const VoltGuide = () => {
       <motion.div
         initial={{ y: 30, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        className="w-14 h-14 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-full flex items-center justify-center shadow-lg border-2 border-white animate-float flex-shrink-0"
+        className="animate-float flex-shrink-0 bg-white rounded-full p-2 shadow-lg"
       >
-        <Bot className="text-white w-8 h-8" />
+        <Bot size={40} className="text-blue-500" />
       </motion.div>
       <AnimatePresence mode="wait">
         <motion.div
@@ -79,15 +79,15 @@ export const VoltGuide = () => {
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 8, scale: 0.95 }}
           transition={{ duration: 0.2 }}
-          className="electro-bubble mb-2 relative"
+          className="electro-bubble mb-2 relative pointer-events-auto"
         >
-          <p className="font-bold text-blue-500 mb-0.5" style={{ fontSize: '0.75rem' }}>Volt says:</p>
-          <p className="text-slate-700 font-medium leading-snug" style={{ fontSize: 'clamp(0.8rem, 1.1vw, 0.95rem)' }}>
+          <p className="font-bold text-blue-500 mb-0.5" style={{ fontSize: '0.65rem' }}>Volt says:</p>
+          <p className="text-slate-700 font-medium leading-snug" style={{ fontSize: 'clamp(0.7rem, 1.1vw, 0.85rem)' }}>
             {voltMessage}
           </p>
           {/* triangle */}
           <div className="absolute -bottom-2.5 left-3 w-0 h-0"
-            style={{ borderLeft: '10px solid transparent', borderRight: '10px solid transparent', borderTop: '10px solid hsl(var(--card))' }} />
+            style={{ borderLeft: '10px solid transparent', borderRight: '0px solid transparent', borderTop: '10px solid white' }} />
         </motion.div>
       </AnimatePresence>
     </div>
@@ -117,32 +117,27 @@ export const NextLevelButton = () => {
           exit={{ opacity: 0 }}
           className="absolute inset-0 z-50 pointer-events-none"
         >
-          {/* Subtle overlay */}
-          <div className="absolute inset-0 bg-white/20 backdrop-blur-sm" />
+          <div className="absolute inset-0 bg-white/20 backdrop-blur-[2px]" />
 
-          {/* "Power generated!" badge — top center */}
           <motion.div
             initial={{ y: -20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.2 }}
-            className="absolute top-24 left-1/2 -translate-x-1/2 flex items-center gap-2 game-panel !py-3 !px-6 border border-yellow-200 shadow-xl pointer-events-auto"
+            className="absolute top-20 left-1/2 -translate-x-1/2 flex items-center gap-2 game-panel !py-2 !px-4"
           >
-            <Star className="w-6 h-6 fill-yellow-400 text-yellow-400" />
-            <span className="font-bold text-slate-700 text-lg">Level Complete!</span>
+            <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+            <span className="font-bold text-slate-700">Level Complete!</span>
           </motion.div>
 
-          {/* Arrow button — bottom right */}
           <motion.button
             initial={{ x: 40, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             transition={{ delay: 0.3, type: 'spring', bounce: 0.35 }}
-            whileHover={{ scale: 1.04, x: 4 }}
-            whileTap={{ scale: 0.96 }}
             onClick={nextLevel}
-            className="absolute bottom-5 right-5 pointer-events-auto flex items-center gap-2 game-btn game-btn-accent shadow-xl text-lg !py-3 !px-6"
+            className="absolute bottom-5 right-5 pointer-events-auto game-btn game-btn-accent shadow-xl"
           >
             {NEXT_LABELS[currentLevel] || 'Next Level'}
-            <ArrowRight className="w-6 h-6 flex-shrink-0" />
+            <ArrowRight className="w-5 h-5 flex-shrink-0" />
           </motion.button>
         </motion.div>
       )}
@@ -163,14 +158,14 @@ export const InfoCard = ({
   borderColor?: string;
   children: React.ReactNode;
 }) => (
-  <div className={`game-panel !p-0 border-2 ${borderColor} overflow-hidden pointer-events-auto`}>
+  <div className={`game-panel !p-0 border-2 ${borderColor} overflow-hidden`}>
     <div className={`bg-gradient-to-r ${colorClass} px-4 py-3 flex items-center gap-2`}>
-      {icon && <span className="text-2xl">{icon}</span>}
-      <h3 className="font-display font-bold text-white" style={{ fontSize: 'clamp(0.95rem, 1.4vw, 1.15rem)' }}>
+      {icon && <span className="text-xl">{icon}</span>}
+      <h3 className="font-display font-bold text-white" style={{ fontSize: 'clamp(0.85rem, 1.3vw, 1.05rem)' }}>
         {title}
       </h3>
     </div>
-    <div className="p-4 text-slate-600 leading-relaxed space-y-3 font-sans" style={{ fontSize: 'clamp(0.8rem, 1.2vw, 0.9rem)' }}>
+    <div className="p-4 text-slate-600 leading-relaxed space-y-2 font-sans" style={{ fontSize: 'clamp(0.75rem, 1.1vw, 0.85rem)' }}>
       {children}
     </div>
   </div>

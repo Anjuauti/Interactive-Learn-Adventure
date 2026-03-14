@@ -1,174 +1,163 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
+import { Canvas, useFrame } from '@react-three/fiber';
+import { OrbitControls, Environment } from '@react-three/drei';
 import * as THREE from 'three';
-import { initBasicScene } from '../../utils/three-helpers';
 import { useGameStore } from '../../store/game-store';
 import { InfoCard } from '../GameUI';
 
-export const Level3Transmission = () => {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const { setVoltMessage, setLevelComplete, addScore, addStar } = useGameStore();
-  const [connections, setConnections] = useState(0);
+const PowerLine = ({ start, end, active }: { start: [number, number, number], end: [number, number, number], active: boolean }) => {
+  const curve = new THREE.CatmullRomCurve3([
+    new THREE.Vector3(...start),
+    new THREE.Vector3((start[0] + end[0]) / 2, Math.min(start[1], end[1]) - 2, (start[2] + end[2]) / 2),
+    new THREE.Vector3(...end)
+  ]);
+  
+  return (
+    <mesh>
+      <tubeGeometry args={[curve, 20, 0.1, 8, false]} />
+      <meshStandardMaterial color={active ? "#00ffff" : "#333333"} emissive={active ? "#00ffff" : "#000000"} emissiveIntensity={active ? 1 : 0} />
+    </mesh>
+  );
+};
 
+const ElectricityParticles = ({ start, end, active }: { start: [number, number, number], end: [number, number, number], active: boolean }) => {
+  const ref = useRef<THREE.Points>(null!);
+  const count = 30;
+  
   useEffect(() => {
-    setVoltMessage("Click the glowing nodes to connect the high-voltage transmission lines between the towers!");
-
-    if (!containerRef.current) return;
-    const { scene, camera, renderer, controls, cleanup } = initBasicScene(containerRef.current);
-    
-    camera.position.set(0, 15, 35);
-
-    // Ground
-    const groundGeo = new THREE.PlaneGeometry(100, 100);
-    const groundMat = new THREE.MeshStandardMaterial({ color: 0x112211, roughness: 0.8 });
-    const ground = new THREE.Mesh(groundGeo, groundMat);
-    ground.rotation.x = -Math.PI / 2;
-    scene.add(ground);
-
-    // Towers
-    const createTower = (x: number) => {
-      const tower = new THREE.Group();
-      
-      const mainBodyGeo = new THREE.CylinderGeometry(0.5, 2, 20, 4);
-      const metalMat = new THREE.MeshStandardMaterial({ color: 0x8899aa, wireframe: true });
-      const mainBody = new THREE.Mesh(mainBodyGeo, metalMat);
-      mainBody.position.y = 10;
-      tower.add(mainBody);
-
-      const crossbarGeo = new THREE.BoxGeometry(10, 0.5, 0.5);
-      const crossbarMat = new THREE.MeshStandardMaterial({ color: 0x778899 });
-      const crossbar = new THREE.Mesh(crossbarGeo, crossbarMat);
-      crossbar.position.y = 15;
-      tower.add(crossbar);
-
-      // Connection Nodes
-      const nodeGeo = new THREE.SphereGeometry(1.2, 16, 16);
-      const nodeMat = new THREE.MeshStandardMaterial({ color: 0x00ffff, emissive: 0x00ffff, emissiveIntensity: 0.8 });
-      
-      const leftNode = new THREE.Mesh(nodeGeo, nodeMat);
-      leftNode.position.set(-5, 14.5, 0);
-      leftNode.userData = { isNode: true, towerX: x, side: 'left' };
-      tower.add(leftNode);
-
-      const rightNode = new THREE.Mesh(nodeGeo, nodeMat.clone());
-      rightNode.position.set(5, 14.5, 0);
-      rightNode.userData = { isNode: true, towerX: x, side: 'right' };
-      tower.add(rightNode);
-
-      tower.position.set(x, 0, 0);
-      return { tower, leftNode, rightNode };
-    };
-
-    const t1 = createTower(-20);
-    const t2 = createTower(0);
-    const t3 = createTower(20);
-    scene.add(t1.tower, t2.tower, t3.tower);
-
-    // Raycaster for clicks
-    const raycaster = new THREE.Raycaster();
-    const mouse = new THREE.Vector2();
-    let selectedNode: THREE.Mesh | null = null;
-    let linesDrawn = 0;
-
-    const onMouseClick = (event: MouseEvent) => {
-      const bounds = containerRef.current?.getBoundingClientRect();
-      if (!bounds) return;
-      mouse.x = ((event.clientX - bounds.left) / bounds.width) * 2 - 1;
-      mouse.y = -((event.clientY - bounds.top) / bounds.height) * 2 + 1;
-
-      raycaster.setFromCamera(mouse, camera);
-      const intersects = raycaster.intersectObjects(scene.children, true);
-      
-      const clicked = intersects.find(hit => hit.object.userData.isNode)?.object as THREE.Mesh;
-      
-      if (clicked) {
-        if (!selectedNode) {
-          selectedNode = clicked;
-          (selectedNode.material as THREE.MeshStandardMaterial).emissiveIntensity = 2; // Highlight
-        } else {
-          // Draw line
-          if (selectedNode !== clicked) {
-            const pos1 = new THREE.Vector3();
-            selectedNode.getWorldPosition(pos1);
-            const pos2 = new THREE.Vector3();
-            clicked.getWorldPosition(pos2);
-
-            const curve = new THREE.QuadraticBezierCurve3(
-              pos1,
-              new THREE.Vector3((pos1.x + pos2.x)/2, pos1.y - 2, (pos1.z + pos2.z)/2),
-              pos2
-            );
-
-            const tubeGeo = new THREE.TubeGeometry(curve, 20, 0.3, 8, false);
-            const tubeMat = new THREE.MeshStandardMaterial({ color: 0xffff00, emissive: 0xddaa00 });
-            const tube = new THREE.Mesh(tubeGeo, tubeMat);
-            scene.add(tube);
-
-            linesDrawn++;
-            setConnections(linesDrawn);
-
-            (selectedNode.material as THREE.MeshStandardMaterial).emissiveIntensity = 0.8;
-            selectedNode = null;
-          }
-        }
+    if (ref.current) {
+      const positions = new Float32Array(count * 3);
+      for (let i = 0; i < count; i++) {
+        const t = Math.random();
+        const x = start[0] + (end[0] - start[0]) * t;
+        const y = start[1] + (end[1] - start[1]) * t;
+        const z = start[2] + (end[2] - start[2]) * t;
+        positions[i * 3] = x;
+        positions[i * 3 + 1] = y;
+        positions[i * 3 + 2] = z;
       }
-    };
-
-    window.addEventListener('click', onMouseClick);
-
-    let frameId: number;
-    const animate = () => {
-      frameId = requestAnimationFrame(animate);
-      controls.update();
-      renderer.render(scene, camera);
-    };
-    animate();
-
-    return () => {
-      window.removeEventListener('click', onMouseClick);
-      cancelAnimationFrame(frameId);
-      cleanup();
-    };
-  }, []);
-
-  useEffect(() => {
-    if (connections >= 4) {
-      setVoltMessage("Great job! Stepping up the voltage to 400,000 Volts means the power travels efficiently with minimal energy loss!");
-      setLevelComplete(true);
-      addScore(100);
-      addStar();
-    } else if (connections > 0) {
-      setVoltMessage(`Keep going! ${connections}/4 lines connected.`);
+      ref.current.geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
     }
-  }, [connections]);
+  }, [start, end]);
+
+  useFrame((_, delta) => {
+    if (!active || !ref.current) return;
+    const positions = ref.current.geometry.attributes.position.array as Float32Array;
+    for (let i = 0; i < count; i++) {
+      positions[i * 3] += (end[0] - start[0]) * delta * 0.2;
+      if (positions[i * 3] > end[0]) {
+        positions[i * 3] = start[0];
+      }
+      const t = (positions[i * 3] - start[0]) / (end[0] - start[0]);
+      // Approximate dip curve for particles
+      const midY = Math.min(start[1], end[1]) - 2;
+      const y1 = start[1] + (midY - start[1]) * (t * 2);
+      const y2 = midY + (end[1] - midY) * ((t - 0.5) * 2);
+      positions[i * 3 + 1] = t < 0.5 ? y1 : y2;
+      positions[i * 3 + 2] = start[2] + (end[2] - start[2]) * t;
+    }
+    ref.current.geometry.attributes.position.needsUpdate = true;
+  });
 
   return (
-    <div className="w-full h-screen relative">
-      <div ref={containerRef} className="absolute inset-0 z-0 cursor-crosshair" />
-      
-      <div className="absolute right-8 top-32 z-10 flex flex-col gap-6 pointer-events-none w-[22rem]">
-        <InfoCard 
-          title="High Voltage Transmission" 
-          icon="🗼"
-          colorClass="from-yellow-400 to-orange-500"
-          borderColor="border-yellow-400"
-        >
-          <p>Electricity travels hundreds of miles.</p>
-          <p>We use a <strong className="text-orange-600">Step-Up Transformer</strong> to increase voltage very high (like 400kV).</p>
-          <div className="bg-yellow-100 p-3 rounded-xl border border-yellow-300 mt-2">
-            <p className="text-orange-600 font-bold text-center">High Voltage = Lower Current = Less Heat Loss!</p>
-          </div>
+    <points ref={ref}>
+      <bufferGeometry />
+      <pointsMaterial color="#ffffff" size={0.3} transparent opacity={active ? 1 : 0} />
+    </points>
+  );
+};
+
+const Tower = ({ position, onClick, active }: { position: [number, number, number], onClick: () => void, active: boolean }) => {
+  return (
+    <group position={position} onClick={onClick} onPointerOver={() => document.body.style.cursor = 'pointer'} onPointerOut={() => document.body.style.cursor = 'default'}>
+      <mesh position={[0, 5, 0]}>
+        <boxGeometry args={[0.5, 10, 0.5]} />
+        <meshStandardMaterial color="#888888" />
+      </mesh>
+      <mesh position={[0, 8, 0]}>
+        <boxGeometry args={[4, 0.2, 0.2]} />
+        <meshStandardMaterial color="#888888" />
+      </mesh>
+      {/* Insulators */}
+      <mesh position={[-1.8, 8, 0]}>
+        <cylinderGeometry args={[0.2, 0.2, 0.6]} />
+        <meshStandardMaterial color={active ? "#00ffff" : "#555555"} emissive={active ? "#00ffff" : "#000000"} />
+      </mesh>
+      <mesh position={[1.8, 8, 0]}>
+        <cylinderGeometry args={[0.2, 0.2, 0.6]} />
+        <meshStandardMaterial color={active ? "#00ffff" : "#555555"} emissive={active ? "#00ffff" : "#000000"} />
+      </mesh>
+    </group>
+  );
+};
+
+export const Level3Transmission = () => {
+  const { setVoltMessage, setLevelComplete, addScore, addStar } = useGameStore();
+  const [step, setStep] = useState(0);
+
+  useEffect(() => {
+    setVoltMessage("Click the towers in order to string the high-voltage lines!");
+  }, [setVoltMessage]);
+
+  const handleTowerClick = (index: number) => {
+    if (index === step) {
+      setStep(step + 1);
+      if (index === 0) setVoltMessage("Tower 1 connected! High voltage reduces heat loss.");
+      if (index === 1) setVoltMessage("Tower 2 connected! Power is flowing over long distances.");
+      if (index === 2) {
+        setVoltMessage("⭐ All towers connected! 132kV power is reaching the city.");
+        setLevelComplete(true);
+        addScore(100);
+        addStar();
+      }
+    }
+  };
+
+  return (
+    <div className="w-full h-full relative">
+      <Canvas style={{ width: '100%', height: '100%' }}>
+        <ambientLight intensity={0.4} />
+        <directionalLight position={[10, 10, 5]} intensity={1} castShadow />
+        <Environment preset="park" />
+        <OrbitControls enablePan={false} minDistance={5} maxDistance={30} maxPolarAngle={Math.PI / 2.2} />
+
+        <mesh position={[0, -0.1, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+          <planeGeometry args={[50, 50]} />
+          <meshStandardMaterial color="#7ec88e" />
+        </mesh>
+
+        {/* Step-up Transformer */}
+        <mesh position={[-12, 1.5, 0]}>
+          <boxGeometry args={[3, 3, 3]} />
+          <meshStandardMaterial color="#444444" />
+        </mesh>
+
+        <Tower position={[-8, 0, 0]} onClick={() => handleTowerClick(0)} active={step >= 1} />
+        <Tower position={[0, 0, 0]} onClick={() => handleTowerClick(1)} active={step >= 2} />
+        <Tower position={[8, 0, 0]} onClick={() => handleTowerClick(2)} active={step >= 3} />
+
+        {step >= 1 && <PowerLine start={[-8, 8, 0]} end={[0, 8, 0]} active={true} />}
+        {step >= 2 && <PowerLine start={[0, 8, 0]} end={[8, 8, 0]} active={true} />}
+
+        {step >= 1 && <ElectricityParticles start={[-8, 8, 0]} end={[0, 8, 0]} active={true} />}
+        {step >= 2 && <ElectricityParticles start={[0, 8, 0]} end={[8, 8, 0]} active={true} />}
+      </Canvas>
+
+      <div className="absolute right-4 top-16 z-10 flex flex-col gap-3 pointer-events-auto" style={{ width: 'clamp(190px, 21vw, 265px)' }}>
+        <InfoCard title="Power Transmission" icon="🗼">
+          <p><strong>High Voltage:</strong> We step up voltage (e.g. 11,000V to 132,000V) for transmission.</p>
+          <p><strong>Why?</strong> P = I²R. Lower current (I) means less energy lost as heat over long distances.</p>
+          <p><strong>Transformers:</strong> V1/V2 = N1/N2. More turns on the secondary coil steps up the voltage.</p>
         </InfoCard>
 
-        <div className="glass-panel p-0 rounded-2xl overflow-hidden">
-          <div className="bg-gradient-to-r from-slate-800 to-slate-700 px-5 py-3 border-b border-white/10">
-            <h3 className="text-xl font-display text-white font-bold">Connections</h3>
-          </div>
-          <div className="p-5 flex justify-center gap-2">
-             {[1,2,3,4].map(i => (
-               <div key={i} className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-xl ${connections >= i ? 'bg-yellow-400 text-slate-900 shadow-[0_0_15px_rgba(255,204,0,0.8)]' : 'bg-slate-700 text-slate-500'}`}>
-                 {i}
-               </div>
-             ))}
+        <div className="game-panel">
+          <h3 className="font-display font-bold text-slate-800 mb-2">Network Status</h3>
+          <div className="flex gap-2">
+            {[1, 2, 3].map(i => (
+              <div key={i} className={`flex-1 text-center py-1 rounded font-bold ${step >= i ? 'bg-cyan-100 text-cyan-600' : 'bg-slate-100 text-slate-400'}`}>
+                T{i}
+              </div>
+            ))}
           </div>
         </div>
       </div>
