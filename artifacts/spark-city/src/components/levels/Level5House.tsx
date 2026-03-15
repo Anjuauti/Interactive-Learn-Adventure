@@ -65,12 +65,10 @@ const buildStep0 = (scene: THREE.Scene) => {
 
 const buildStep1 = (scene: THREE.Scene) => {
   const grp = new THREE.Group();
-  grp.add(
-    Object.assign(
-      new THREE.Mesh(new THREE.BoxGeometry(1.6, 2.8, 0.9), new THREE.MeshStandardMaterial({ color: 0x2c3e50, metalness: 0.3 })),
-      {}
-    )
-  );
+  grp.add(new THREE.Mesh(
+    new THREE.BoxGeometry(1.6, 2.8, 0.9),
+    new THREE.MeshStandardMaterial({ color: 0x2c3e50, metalness: 0.3 })
+  ));
   const dial = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.55, 1.0, 20), new THREE.MeshStandardMaterial({ color: 0xecf0f1 }));
   dial.rotation.x = Math.PI / 2;
   dial.position.z = 0.22;
@@ -158,10 +156,13 @@ export const Level5House = () => {
     const wallMat = new THREE.MeshStandardMaterial({ color: 0xf5efe6 });
 
     // Floor
-    scene.add(Object.assign(
-      new THREE.Mesh(new THREE.BoxGeometry(16, 0.5, 8), new THREE.MeshStandardMaterial({ color: 0xe8d5b7, roughness: 0.8 })),
-      { position: new THREE.Vector3(0, 0, 0) }
-    ));
+    const floor = new THREE.Mesh(
+      new THREE.BoxGeometry(16, 0.5, 8),
+      new THREE.MeshStandardMaterial({ color: 0xe8d5b7, roughness: 0.8 })
+    );
+    floor.position.set(0, 0, 0);
+    floor.receiveShadow = true;
+    scene.add(floor);
 
     // Walls
     const addBox = (w: number, h: number, d: number, x: number, y: number, z: number, mat = wallMat) => {
