@@ -109,30 +109,33 @@ export const Level7Consumption = () => {
     });
   };
 
-  // Update 3D materials when state changes
+  // Update 3D materials + wire glow when state changes
   useEffect(() => {
-    const scene = (window as any).__lvl7scene as THREE.Scene;
-    if (!scene) return;
-
     APPLIANCES.forEach(app => {
       const mesh = meshesRef.current[app.id];
       if (!mesh) return;
       const mat = mesh.material as THREE.MeshStandardMaterial;
       const on = activeIds.has(app.id);
       mat.emissive.setHex(on ? app.emissiveHex : 0x000000);
-      mat.emissiveIntensity = on ? 1.0 : 0;
+      mat.emissiveIntensity = on ? 1.2 : 0;
 
       const pl = pointLightsRef.current[app.id];
-      if (pl) pl.intensity = on ? 3 : 0;
+      if (pl) pl.intensity = on ? 3.5 : 0;
+
+      // Glow the wire from MCB to this appliance
+      const wire = meshesRef.current[app.id + '_wire'];
+      if (wire) {
+        const wireMat = wire.material as THREE.MeshStandardMaterial;
+        wireMat.color.setHex(on ? app.emissiveHex : 0x1a3a5c);
+        wireMat.emissive.setHex(on ? app.emissiveHex : 0x000000);
+        wireMat.emissiveIntensity = on ? 1.4 : 0;
+      }
     });
   }, [activeIds]);
 
   useEffect(() => {
-    setVoltMessage("💡 Power Consumption! TAP each appliance switch to turn them ON and learn how much electricity each one uses!");
-
     if (!containerRef.current) return;
     const { scene, camera, renderer, controls, cleanup } = initBasicScene(containerRef.current);
-    (window as any).__lvl7scene = scene;
 
     scene.background = new THREE.Color(0x0a0f1a);
     scene.fog = new THREE.FogExp2(0x0a0f1a, 0.025);
@@ -167,40 +170,54 @@ export const Level7Consumption = () => {
       scene.add(mesh);
       meshesRef.current[app.id] = mesh;
 
-      // Point light for each appliance (off by default)
-      const pl = new THREE.PointLight(app.color.replace('#', '0x') as any, 0, 14);
+      // Point light for each appliance — use THREE.Color to properly parse hex string
+      const lightColor = new THREE.Color(app.color);
+      const pl = new THREE.PointLight(lightColor, 0, 14);
       pl.position.set(app.pos[0], app.pos[1] + 3, app.pos[2] + 1);
       scene.add(pl);
       pointLightsRef.current[app.id] = pl;
 
-      // Label backdrop
+      // Watt label platform
       const labelMesh = new THREE.Mesh(
-        new THREE.PlaneGeometry(3, 0.6),
-        new THREE.MeshStandardMaterial({ color: 0x1e293b, transparent: true, opacity: 0.8 })
+        new THREE.BoxGeometry(3.2, 0.4, 1.2),
+        new THREE.MeshStandardMaterial({ color: 0x0f2035, roughness: 0.9 })
       );
-      labelMesh.position.set(app.pos[0], app.pos[1] + 4.2, app.pos[2] + 0.1);
+      labelMesh.position.set(app.pos[0], -0.2, app.pos[2]);
       scene.add(labelMesh);
     });
 
-    // MCB panel
-    const mcb = new THREE.Mesh(new THREE.BoxGeometry(2.5, 4, 0.4), new THREE.MeshStandardMaterial({ color: 0x1e293b }));
-    mcb.position.set(-14, 3, 0);
-    scene.add(mcb);
+    // MCB panel — improved look
+    const mcbBox = new THREE.Mesh(new THREE.BoxGeometry(3, 5, 0.5), new THREE.MeshStandardMaterial({ color: 0x0f172a, metalness: 0.3 }));
+    mcbBox.position.set(-14, 3, 0);
+    scene.add(mcbBox);
+    const mcbFront = new THREE.Mesh(new THREE.BoxGeometry(2.7, 4.5, 0.3), new THREE.MeshStandardMaterial({ color: 0x1e293b }));
+    mcbFront.position.set(-14, 3, 0.3);
+    scene.add(mcbFront);
     for (let i = 0; i < APPLIANCES.length; i++) {
-      const m = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.7, 0.4), new THREE.MeshStandardMaterial({ color: 0x22c55e }));
-      m.position.set(-14.5 + i * 0.42, 3, 0.35);
+      const m = new THREE.Mesh(new THREE.BoxGeometry(0.38, 0.85, 0.4),
+        new THREE.MeshStandardMaterial({ color: 0x22c55e, emissive: 0x22c55e, emissiveIntensity: 0.6 }));
+      m.position.set(-14.5 + i * 0.46, 3.2, 0.55);
       scene.add(m);
     }
+    // MCB label bar
+    const mcbLabel = new THREE.Mesh(new THREE.BoxGeometry(2.5, 0.3, 0.1), new THREE.MeshStandardMaterial({ color: 0xffd700, emissive: 0xffd700, emissiveIntensity: 0.8 }));
+    mcbLabel.position.set(-14, 5.8, 0.55);
+    scene.add(mcbLabel);
 
-    // Wires from MCB to each appliance
+    // Glowing tube wires from MCB to each appliance — stored for live update
     APPLIANCES.forEach(app => {
-      const pts = [
+      const curve = new THREE.CatmullRomCurve3([
         new THREE.Vector3(-14, 5.5, 0),
-        new THREE.Vector3(app.pos[0], 6.5, 0),
-        new THREE.Vector3(app.pos[0], app.pos[1] + 0.5, 0),
-      ];
-      const geo = new THREE.BufferGeometry().setFromPoints(pts);
-      scene.add(new THREE.Line(geo, new THREE.LineBasicMaterial({ color: 0x334155 })));
+        new THREE.Vector3(-4, 7, 0),
+        new THREE.Vector3(app.pos[0], 6.8, 0),
+        new THREE.Vector3(app.pos[0], app.pos[1] + (app.id === 'bulb' ? 3 : 1), 0),
+      ]);
+      const wireMesh = new THREE.Mesh(
+        new THREE.TubeGeometry(curve, 24, 0.06, 6, false),
+        new THREE.MeshStandardMaterial({ color: 0x1a3a5c, emissive: 0x000000, emissiveIntensity: 0, roughness: 0.4 })
+      );
+      scene.add(wireMesh);
+      meshesRef.current[app.id + '_wire'] = wireMesh;
     });
 
     let frame: number;

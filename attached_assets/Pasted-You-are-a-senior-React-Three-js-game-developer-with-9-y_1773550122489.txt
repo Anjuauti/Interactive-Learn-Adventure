@@ -1,0 +1,286 @@
+You are a **senior React + Three.js game developer with 9 years of experience building educational simulations**.
+
+You are working on an **existing project** called:
+
+Spark City Adventure – From Generation to Home Electricity
+
+The project already works but has **major usability, UI, and gameplay issues**.
+Your task is to **modify the existing codebase**, NOT rebuild it.
+
+Fix the following problems carefully.
+
+---
+
+MAIN CRITICAL PROBLEMS TO FIX
+
+1. The game moves to the **next step too quickly** before users can read the explanation.
+2. The **UI does not fit normal laptop screens** and elements overflow outside the screen.
+3. Some **panels overlap the 3D scene**.
+4. The **3D models look too basic** and the turbine in level 1 is not clearly visible.
+5. The **chat assistant overlaps the house**, hiding components.
+6. The **3D house design changes between levels**.
+7. Electricity flow is not clearly visible.
+
+All these problems must be fixed.
+
+---
+
+GLOBAL GAMEPLAY FIX
+
+The game must follow this **interaction sequence**:
+
+Step 1
+Instruction panel appears explaining the concept.
+
+Step 2
+User performs an action (click / drag / connect).
+
+Step 3
+Animation plays.
+
+Step 4
+Scientific explanation appears.
+
+Step 5
+User clicks **NEXT STEP** button.
+
+The game must **never automatically jump to the next step**.
+
+Minimum explanation display time should be **5 seconds**.
+
+---
+
+SCREEN SIZE FIX
+
+The interface must properly fit screens:
+
+1366×768
+1920×1080
+
+Rules:
+
+• No UI elements outside screen
+• No overlapping panels
+• 3D canvas must always remain visible
+• Panels should scale responsively
+
+Do NOT rely on vertical scrolling for gameplay.
+
+Everything must remain visible inside the viewport.
+
+---
+
+REMOVE CHAT OVERLAY
+
+The floating **Volt chat bubble** currently blocks the 3D house.
+
+Remove the chat bubble from:
+
+Level 5
+Level 6
+Level 7
+Level 8
+
+Instead place all explanations in the **right-side instruction panel**.
+
+---
+
+CREATE A SINGLE REUSABLE 3D HOME MODEL
+
+Create a reusable component:
+
+HomeModel
+
+Use this same model in:
+
+Level 5
+Level 6
+Level 7
+Level 8
+
+The house must:
+
+• have **3 rooms**
+• have **no roof**
+• keep same camera angle across levels
+
+Rooms:
+
+Hall
+Kitchen
+Bedroom
+
+---
+
+LEVEL 1 FIX – HYDROELECTRIC DAM
+
+Current problem:
+
+The turbine is not clearly visible.
+
+Fix:
+
+Add proper hydroelectric components:
+
+Water reservoir
+Dam gate
+Water tunnel
+Large rotating turbine
+Generator rotor
+Generator stator
+
+Animation sequence:
+
+Water → Turbine → Generator → Electricity
+
+Show electromagnetic induction animation.
+
+Add explanation:
+
+Water kinetic energy spins turbine
+Turbine rotates generator rotor
+Magnetic field rotates inside stator coils
+AC electricity is generated.
+
+---
+
+LEVEL 5 – ELECTRICITY ENTERS HOUSE
+
+This level must show electricity path clearly:
+
+Transmission pole
+Service wire
+Electric meter
+MCB panel
+Home wiring
+
+Electricity animation must flow:
+
+Pole → Meter → MCB → House
+
+Add small realistic 3D models:
+
+Electric meter
+MCB distribution board
+
+Do not block the house with chat UI.
+
+---
+
+LEVEL 6 – HOME WIRING SIMULATOR
+
+Display open 3D house with **3 rooms**.
+
+Hall:
+
+Bulb
+Fan
+TV
+
+Kitchen:
+
+Bulb
+Refrigerator
+Washing Machine
+
+Bedroom:
+
+Bulb
+Fan
+TV
+
+When user installs a component:
+
+It must appear inside the correct room in the 3D house.
+
+Also show incoming wiring:
+
+Pole → Meter → MCB → Rooms.
+
+---
+
+LEVEL 7 – POWER CONSUMPTION
+
+Environment should be darker to highlight energy flow.
+
+Show smart meter measuring electricity.
+
+Appliances show power consumption:
+
+Bulb = 9W
+Fan = 70W
+TV = 120W
+Fridge = 300W
+Washing Machine = 500W
+
+When appliance turns ON:
+
+Bulb lights
+Fan rotates
+TV turns on
+Fridge lights
+Washing machine drum rotates.
+
+Smart meter updates watt usage in real time.
+
+Explain formula:
+
+Energy = Power × Time.
+
+---
+
+LEVEL 8 – SMART HOME ACTIVATION
+
+Show full 3D house without roof.
+
+All appliances are installed.
+
+User turns ON switches.
+
+Electricity flows through all wires.
+
+House lights up.
+
+Display final message:
+
+"Congratulations! You restored electricity to Spark City."
+
+---
+
+VISUAL IMPROVEMENTS
+
+Improve models slightly while keeping low-poly style:
+
+Hydro turbine
+Generator
+Transmission tower
+Transformer
+Electric meter
+MCB panel
+Appliances
+
+Add clearer electricity glow effects.
+
+---
+
+EDUCATIONAL CONTENT
+
+Each step must clearly explain:
+
+Hydropower
+Electromagnetic induction
+Transmission voltage
+Transformers
+MCB safety
+Parallel wiring
+Power consumption.
+
+All explanations must be understandable for **kids aged 8-16**.
+
+---
+
+FINAL RESULT
+
+The game should feel like a **science museum interactive exhibit** where children learn visually how electricity travels:
+
+Water → Turbine → Generator → Transmission → Transformer → Meter → MCB → House → Appliances.

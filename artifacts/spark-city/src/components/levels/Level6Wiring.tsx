@@ -166,12 +166,7 @@ export const Level6Wiring = () => {
     wall(7, 5, 0.3, -5, 2.5, 0, 0xeeeaea); // divider left
     wall(7, 5, 0.3, 5, 2.5, 0, 0xeeeaea); // divider right
 
-    // Roof
-    const roof = new THREE.Mesh(new THREE.ConeGeometry(13, 4, 4), new THREE.MeshStandardMaterial({ color: 0xb03020 }));
-    roof.rotation.y = Math.PI / 4;
-    roof.position.set(0, 7, 0);
-    roof.castShadow = true;
-    scene.add(roof);
+    // No roof — open-top house so children can see inside clearly
 
     // MCB Panel
     const mcb = new THREE.Mesh(new THREE.BoxGeometry(2, 3, 0.3), new THREE.MeshStandardMaterial({ color: 0x1e293b }));

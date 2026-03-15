@@ -91,7 +91,8 @@ export const GameHUD = () => {
 
 export const VoltGuide = () => {
   const { voltMessage, currentLevel } = useGameStore();
-  if (currentLevel === 0 || currentLevel === 9) return null;
+  // Hide for levels 5-8: explanations live in the right panel so the chat bubble doesn't block the 3D house
+  if (currentLevel === 0 || currentLevel === 9 || currentLevel >= 5) return null;
 
   return (
     <div
