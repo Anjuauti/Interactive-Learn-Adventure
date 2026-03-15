@@ -11,6 +11,7 @@ const JOURNEY_STEPS = [
   { icon: '🏠', label: 'Home Entry', color: '#10b981' },
   { icon: '🔌', label: 'Wiring', color: '#f97316' },
   { icon: '💡', label: 'Appliances', color: '#ec4899' },
+  { icon: '🤖', label: 'Smart Home', color: '#14b8a6' },
 ];
 
 const HOW_TO_PLAY = [
@@ -112,7 +113,7 @@ export const StartScreen = () => {
                 className="mt-1 font-medium"
                 style={{ color: 'rgba(255,255,255,0.55)', fontSize: 'clamp(0.85rem, 1.2vw, 1rem)' }}
               >
-                7 interactive science missions for curious minds!
+                8 interactive science missions for curious minds!
               </p>
             </motion.div>
 

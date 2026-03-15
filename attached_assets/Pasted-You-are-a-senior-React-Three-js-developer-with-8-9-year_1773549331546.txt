@@ -1,0 +1,295 @@
+You are a **senior React + Three.js developer with 8–9 years of experience building educational interactive 3D simulations and games**.
+
+You are working on an existing repository for a science-park educational game called:
+
+**Spark City Adventure – From Generation to Home Electricity**
+
+Do **NOT rebuild the project from scratch.**
+Instead **modify and improve the existing implementation.**
+
+The goal is to make the game **stable, responsive, educational, and visually clear for children aged 8–16 visiting a science park exhibit.**
+
+The game must clearly teach the **complete journey of electricity** from generation to appliances.
+
+---
+
+# IMPORTANT GLOBAL FIXES
+
+## 1. Fix speed of transitions
+
+Currently the game moves to the next step **too fast**.
+
+Problem:
+Users cannot read the scientific explanation before the game moves forward.
+
+Fix:
+
+• Add **step-based progression**
+• User must click **Next Step** before continuing
+• Display explanation text for **minimum 4–6 seconds**
+• Do not auto-transition to the next stage
+
+Game flow must become:
+
+Instruction → User action → Explanation → Next Step button
+
+---
+
+# 2. Screen size and responsiveness
+
+The interface currently **does not fit normal laptop screens** and elements go outside the screen.
+
+Fix the layout so it works properly on:
+
+• 1366×768 laptops
+• 1920×1080 monitors
+• large exhibit touchscreens
+
+Requirements:
+
+• No UI overlap
+• No elements outside screen
+• 3D scene always visible
+• Panels resize automatically
+
+Do **NOT force scrolling for gameplay UI.**
+
+Everything must fit in the screen properly.
+
+---
+
+# 3. Improve realism of 3D models
+
+Currently many objects look too simple and unrealistic.
+
+Improve models for:
+
+• Hydro turbine
+• Generator
+• Transmission tower
+• Transformer
+• Electric meter
+• MCB panel
+• Household appliances
+
+Use **clean low-poly realistic shapes** suitable for educational games.
+
+Examples:
+
+Generator should clearly show
+
+Rotor
+Stator
+Magnetic field rotation
+
+Turbine must be **clearly visible rotating with water flow**.
+
+Right now the turbine is **not visible properly** — fix this.
+
+---
+
+# 4. Add instruction before interaction
+
+Before every interactive action, display a **short explanation card**.
+
+Example:
+
+"Click the dam gate to release water.
+This water spins the turbine which rotates the generator."
+
+User should **understand the science first** before clicking.
+
+---
+
+# LEVEL-SPECIFIC FIXES
+
+---
+
+# LEVEL 1 – HYDROELECTRIC GENERATION
+
+Problems:
+
+• Turbine not visible clearly
+• Generator mechanism unclear
+• Flow animation too simple
+
+Fix:
+
+Add clear sequence
+
+Water Reservoir
+→ Dam Gate
+→ Water Flow
+→ Turbine Rotation
+→ Generator Rotor
+→ Magnetic Field
+→ Electricity Generation
+
+Show **electromagnetic induction animation**.
+
+Scientific explanation must include:
+
+• Kinetic energy of water
+• Turbine mechanical rotation
+• Magnetic field rotation
+• AC electricity generation
+
+---
+
+# LEVEL 5 – ELECTRICITY ENTERS THE HOUSE
+
+This level should combine the ideas shown in **Image 2 and Image 3**.
+
+Show:
+
+Service Pole
+Service Wire
+Electric Meter
+MCB Panel
+Home Wiring
+
+Electricity flow must appear as animated line:
+
+Pole → Meter → MCB → House
+
+Important fix:
+
+Remove the **chat popup in the house view** because it blocks components.
+
+Move explanations to the **right information panel** instead.
+
+---
+
+# LEVEL 6 – HOME WIRING SIMULATOR
+
+This level should look like **Image 4**.
+
+Show a **3-room open house** with NO roof.
+
+Rooms:
+
+Hall
+Kitchen
+Bedroom
+
+Components inside house must be:
+
+Hall:
+• Bulb
+• Fan
+• TV
+
+Kitchen:
+• Bulb
+• Refrigerator
+• Washing Machine
+
+Bedroom:
+• Bulb
+• Fan
+• TV
+
+Also display:
+
+Transmission pole
+Electric meter
+MCB panel
+Wiring lines entering the house.
+
+Electricity flow animation must show:
+
+Pole → Meter → MCB → Rooms.
+
+---
+
+# LEVEL 7 – POWER CONSUMPTION
+
+This level should match **Image 5 design**.
+
+Use a **dark environment with glowing wires** to show energy flow.
+
+Show appliances connected to a **smart meter**.
+
+When user turns ON appliances:
+
+Bulb → glows
+Fan → rotates
+TV → screen turns on
+Fridge → light appears
+Washing machine → drum spins
+
+Smart meter must display:
+
+Total watt consumption
+
+Example:
+
+Bulb = 9W
+Fan = 70W
+TV = 120W
+Fridge = 300W
+Washing Machine = 500W
+
+Explain the formula:
+
+Energy = Power × Time
+
+---
+
+# LEVEL 8 – SMART HOME ACTIVATION
+
+This level should combine ideas from **Image 7 and Image 8**.
+
+Show a **complete 3D house without roof**.
+
+All appliances must already be installed.
+
+User toggles switches to power the home.
+
+When all appliances turn ON:
+
+• house lights glow
+• electricity flows across wires
+• final animation plays
+
+Display message:
+
+"Congratulations! You restored electricity in Spark City."
+
+---
+
+# FINAL VISUAL REQUIREMENTS
+
+Improve overall design:
+
+• Softer educational color palette
+• Balanced lighting
+• Clear electricity flow animations
+• Consistent camera angles across levels
+• No overlapping UI panels
+
+3D home model must remain **consistent in Levels 5, 6, 7, and 8**.
+
+---
+
+# EDUCATIONAL CONTENT
+
+Each step must explain science concepts clearly:
+
+Hydropower
+Electromagnetic induction
+High voltage transmission
+Transformers
+MCB protection
+Parallel wiring
+Power consumption
+
+All explanations must be **simple for children aged 8–16**.
+
+---
+
+# FINAL EXPECTED RESULT
+
+The final experience should feel like a **science museum interactive exhibit** where children visually learn:
+
+Water → Turbine → Generator → Transmission → Transformer → House Wiring → Appliances.

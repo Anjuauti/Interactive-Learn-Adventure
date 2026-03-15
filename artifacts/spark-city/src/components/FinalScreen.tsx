@@ -41,7 +41,7 @@ const ConfettiPiece = ({ i }: { i: number }) => {
 
 export const FinalScreen = () => {
   const { score, stars, resetGame } = useGameStore();
-  const maxStars = 7;
+  const maxStars = 8;
 
   return (
     <div
@@ -143,7 +143,7 @@ export const FinalScreen = () => {
           className="font-bold"
           style={{ color: '#94a3b8', fontSize: '0.95rem' }}
         >
-          {stars >= 6 ? '⭐ Electric Genius!' : stars >= 4 ? '🌟 Power Engineer!' : '🔌 Spark Explorer!'}
+          {stars >= 7 ? '⭐ Electric Genius!' : stars >= 5 ? '🌟 Power Engineer!' : '🔌 Spark Explorer!'}
         </p>
       </motion.div>
 
@@ -158,12 +158,13 @@ export const FinalScreen = () => {
         {[
           { icon: '💧', label: 'Dam' },
           { icon: '⚙️', label: 'Generator' },
-          { icon: '🗼', label: 'Transmission' },
+          { icon: '🗼', label: 'Lines' },
           { icon: '🏢', label: 'Substation' },
           { icon: '🏠', label: 'Home Entry' },
           { icon: '🔌', label: 'Wiring' },
           { icon: '💡', label: 'Appliances' },
-        ].map((step, i) => (
+          { icon: '🤖', label: 'Smart Home' },
+        ].map((step, i, arr) => (
           <React.Fragment key={step.label}>
             <motion.div
               initial={{ scale: 0 }}
@@ -174,21 +175,21 @@ export const FinalScreen = () => {
               <div
                 className="rounded-2xl flex items-center justify-center"
                 style={{
-                  width: 48, height: 48,
+                  width: 44, height: 44,
                   background: 'rgba(0,230,118,0.2)',
                   border: '2.5px solid rgba(0,230,118,0.6)',
                   boxShadow: '0 0 12px rgba(0,230,118,0.3)',
-                  fontSize: '1.4rem',
+                  fontSize: '1.25rem',
                 }}
               >
                 {step.icon}
               </div>
-              <span style={{ color: 'rgba(255,255,255,0.55)', fontSize: '0.62rem', fontWeight: 'bold' }}>
+              <span style={{ color: 'rgba(255,255,255,0.55)', fontSize: '0.58rem', fontWeight: 'bold' }}>
                 {step.label}
               </span>
             </motion.div>
-            {i < 6 && (
-              <span style={{ color: '#00e676', fontSize: '1.2rem', paddingBottom: 14 }} className="animate-bounce-arrow">
+            {i < arr.length - 1 && (
+              <span style={{ color: '#00e676', fontSize: '1rem', paddingBottom: 14 }} className="animate-bounce-arrow">
                 →
               </span>
             )}

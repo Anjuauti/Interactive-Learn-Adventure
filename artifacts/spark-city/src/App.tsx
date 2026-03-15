@@ -16,6 +16,7 @@ import { Level4Substation } from "./components/levels/Level4Substation";
 import { Level5House } from "./components/levels/Level5House";
 import { Level6Wiring } from "./components/levels/Level6Wiring";
 import { Level7Consumption } from "./components/levels/Level7Consumption";
+import { Level8SmartHome } from "./components/levels/Level8SmartHome";
 
 const queryClient = new QueryClient();
 
@@ -35,7 +36,6 @@ function GameEngine() {
           maxWidth: '1366px',
           maxHeight: '768px',
           boxShadow: '0 8px 40px rgba(0,0,0,0.18)',
-          borderRadius: '0px',
         }}
       >
         <GameHUD />
@@ -50,7 +50,8 @@ function GameEngine() {
         {currentLevel === 5 && <Level5House />}
         {currentLevel === 6 && <Level6Wiring />}
         {currentLevel === 7 && <Level7Consumption />}
-        {currentLevel === 8 && <FinalScreen />}
+        {currentLevel === 8 && <Level8SmartHome />}
+        {currentLevel === 9 && <FinalScreen />}
       </div>
     </div>
   );

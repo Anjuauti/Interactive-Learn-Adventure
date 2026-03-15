@@ -11,7 +11,8 @@ const LEVEL_NAMES = [
   "Substation",
   "Home Entry",
   "Home Wiring",
-  "Power Consumption"
+  "Power Consumption",
+  "Smart Home",
 ];
 
 const LEVEL_COLORS: Record<number, string> = {
@@ -22,63 +23,62 @@ const LEVEL_COLORS: Record<number, string> = {
   5: '#10b981',
   6: '#f97316',
   7: '#ec4899',
+  8: '#14b8a6',
 };
 
 export const GameHUD = () => {
   const { currentLevel, score, stars } = useGameStore();
-  if (currentLevel === 0 || currentLevel === 8) return null;
+  if (currentLevel === 0 || currentLevel === 9) return null;
 
   const color = LEVEL_COLORS[currentLevel] || '#3b82f6';
 
   return (
     <div className="absolute top-0 left-0 w-full z-40 pointer-events-none">
       <div className="flex justify-between items-start px-4 pt-3 gap-2">
-        {/* Level info */}
         <motion.div
           key={currentLevel}
           initial={{ x: -30, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           transition={{ type: 'spring', bounce: 0.3 }}
           className="game-panel pointer-events-auto flex items-center gap-3"
-          style={{ paddingTop: '0.6rem', paddingBottom: '0.6rem' }}
+          style={{ paddingTop: '0.55rem', paddingBottom: '0.55rem' }}
         >
           <div
             className="flex items-center justify-center rounded-xl text-white font-display font-bold"
-            style={{ background: color, width: 42, height: 42, fontSize: '1rem', flexShrink: 0 }}
+            style={{ background: color, width: 40, height: 40, fontSize: '0.95rem', flexShrink: 0 }}
           >
             {currentLevel}
           </div>
           <div>
-            <p className="font-bold uppercase tracking-widest" style={{ fontSize: '0.65rem', color }}>
-              LEVEL {currentLevel} OF 7
+            <p className="font-bold uppercase tracking-widest" style={{ fontSize: '0.62rem', color }}>
+              LEVEL {currentLevel} OF 8
             </p>
-            <h2 className="font-display font-bold text-slate-800 leading-tight" style={{ fontSize: 'clamp(1rem, 1.6vw, 1.25rem)' }}>
+            <h2 className="font-display font-bold text-slate-800 leading-tight" style={{ fontSize: 'clamp(0.9rem, 1.4vw, 1.15rem)' }}>
               {LEVEL_NAMES[currentLevel]}
             </h2>
           </div>
         </motion.div>
 
-        {/* Score & Stars */}
         <div className="flex items-center gap-2 pointer-events-auto">
           <motion.div
             className="flex items-center gap-1.5 game-panel"
-            style={{ paddingTop: '0.5rem', paddingBottom: '0.5rem', paddingLeft: '0.9rem', paddingRight: '0.9rem' }}
+            style={{ paddingTop: '0.45rem', paddingBottom: '0.45rem', paddingLeft: '0.8rem', paddingRight: '0.8rem' }}
           >
-            <Star className="fill-yellow-400 text-yellow-400" style={{ width: 22, height: 22 }} />
-            <span className="font-display font-bold text-slate-700" style={{ fontSize: '1.15rem' }}>{stars}</span>
+            <Star className="fill-yellow-400 text-yellow-400" style={{ width: 20, height: 20 }} />
+            <span className="font-display font-bold text-slate-700" style={{ fontSize: '1.05rem' }}>{stars}</span>
           </motion.div>
           <motion.div
             className="flex items-center gap-1.5 game-panel"
-            style={{ paddingTop: '0.5rem', paddingBottom: '0.5rem', paddingLeft: '0.9rem', paddingRight: '0.9rem' }}
+            style={{ paddingTop: '0.45rem', paddingBottom: '0.45rem', paddingLeft: '0.8rem', paddingRight: '0.8rem' }}
           >
-            <Zap className="fill-yellow-400 text-yellow-400" style={{ width: 22, height: 22 }} />
+            <Zap className="fill-yellow-400 text-yellow-400" style={{ width: 20, height: 20 }} />
             <motion.span
               key={score}
               initial={{ scale: 1.5, color: '#f59e0b' }}
               animate={{ scale: 1, color: '#334155' }}
               transition={{ duration: 0.4 }}
               className="font-display font-bold text-slate-700"
-              style={{ fontSize: '1.15rem' }}
+              style={{ fontSize: '1.05rem' }}
             >
               {score}
             </motion.span>
@@ -91,14 +91,13 @@ export const GameHUD = () => {
 
 export const VoltGuide = () => {
   const { voltMessage, currentLevel } = useGameStore();
-  if (currentLevel === 0 || currentLevel === 8) return null;
+  if (currentLevel === 0 || currentLevel === 9) return null;
 
   return (
     <div
-      className="absolute bottom-4 left-4 z-40 flex items-end gap-3 pointer-events-none"
-      style={{ maxWidth: '48%' }}
+      className="absolute bottom-3 left-3 z-40 flex items-end gap-3 pointer-events-none"
+      style={{ maxWidth: '46%' }}
     >
-      {/* Volt avatar */}
       <motion.div
         initial={{ y: 40, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -107,20 +106,19 @@ export const VoltGuide = () => {
         style={{
           background: 'linear-gradient(135deg, #1e40af, #0ea5e9)',
           borderRadius: '50%',
-          width: 64,
-          height: 64,
+          width: 58,
+          height: 58,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           boxShadow: '0 0 20px rgba(0,194,255,0.6), 0 0 40px rgba(0,194,255,0.3)',
           border: '3px solid rgba(0,194,255,0.6)',
-          fontSize: '2rem',
+          fontSize: '1.8rem',
         }}
       >
         🤖
       </motion.div>
 
-      {/* Speech bubble */}
       <AnimatePresence mode="wait">
         <motion.div
           key={voltMessage}
@@ -129,21 +127,20 @@ export const VoltGuide = () => {
           exit={{ opacity: 0, y: 10, scale: 0.92 }}
           transition={{ duration: 0.25 }}
           className="electro-bubble mb-2 relative pointer-events-auto"
-          style={{ maxWidth: 320 }}
+          style={{ maxWidth: 290 }}
         >
           <p
             className="font-display font-bold mb-1"
-            style={{ fontSize: '0.75rem', color: '#0ea5e9', letterSpacing: '0.05em' }}
+            style={{ fontSize: '0.7rem', color: '#0ea5e9', letterSpacing: '0.05em' }}
           >
             ⚡ VOLT SAYS:
           </p>
           <p
             className="text-slate-700 font-medium leading-snug"
-            style={{ fontSize: 'clamp(0.85rem, 1.2vw, 1rem)' }}
+            style={{ fontSize: 'clamp(0.8rem, 1.1vw, 0.95rem)' }}
           >
             {voltMessage}
           </p>
-          {/* tail */}
           <div
             className="absolute -bottom-3 left-4 w-0 h-0"
             style={{
@@ -160,7 +157,7 @@ export const VoltGuide = () => {
 
 export const NextLevelButton = () => {
   const { levelComplete, nextLevel, currentLevel } = useGameStore();
-  if (currentLevel === 0 || currentLevel === 8) return null;
+  if (currentLevel === 0 || currentLevel === 9) return null;
 
   const NEXT_LABELS: Record<number, string> = {
     1: '⚙️ Explore the Generator',
@@ -169,7 +166,8 @@ export const NextLevelButton = () => {
     4: '🏠 Enter the House',
     5: '🔌 Wire the House',
     6: '💡 Power the Appliances',
-    7: '🏆 See Final Results',
+    7: '🏠 Smart Home!',
+    8: '🏆 See Final Results',
   };
 
   return (
@@ -183,7 +181,6 @@ export const NextLevelButton = () => {
         >
           <div className="absolute inset-0 bg-white/25 backdrop-blur-sm" />
 
-          {/* "Level Complete" banner */}
           <motion.div
             initial={{ y: -40, opacity: 0, scale: 0.8 }}
             animate={{ y: 0, opacity: 1, scale: 1 }}
@@ -192,26 +189,26 @@ export const NextLevelButton = () => {
             style={{
               background: 'linear-gradient(135deg, #ffd700, #f59e0b)',
               boxShadow: '0 0 30px rgba(255,215,0,0.6), 0 0 60px rgba(255,215,0,0.3)',
+              whiteSpace: 'nowrap',
             }}
           >
-            <Star className="fill-white text-white" style={{ width: 24, height: 24 }} />
-            <span className="font-display font-bold text-slate-900" style={{ fontSize: '1.35rem' }}>
+            <Star className="fill-white text-white" style={{ width: 22, height: 22 }} />
+            <span className="font-display font-bold text-slate-900" style={{ fontSize: '1.25rem' }}>
               Level Complete! +50 ⚡
             </span>
-            <Star className="fill-white text-white" style={{ width: 24, height: 24 }} />
+            <Star className="fill-white text-white" style={{ width: 22, height: 22 }} />
           </motion.div>
 
-          {/* Next level button */}
           <motion.button
             initial={{ x: 60, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             transition={{ delay: 0.35, type: 'spring', bounce: 0.35 }}
             onClick={nextLevel}
             className="absolute bottom-5 right-5 pointer-events-auto game-btn game-btn-accent flex items-center gap-2"
-            style={{ fontSize: '1.1rem', paddingLeft: '1.6rem', paddingRight: '1.6rem' }}
+            style={{ fontSize: '1.05rem', paddingLeft: '1.5rem', paddingRight: '1.5rem' }}
           >
             {NEXT_LABELS[currentLevel] || 'Next Level'}
-            <ArrowRight style={{ width: 20, height: 20 }} className="animate-bounce-arrow flex-shrink-0" />
+            <ArrowRight style={{ width: 19, height: 19 }} className="animate-bounce-arrow flex-shrink-0" />
           </motion.button>
         </motion.div>
       )}
@@ -234,10 +231,10 @@ export const InfoCard = ({
 }) => (
   <div className={`game-panel !p-0 border-2 ${borderColor} overflow-hidden`}>
     <div className={`bg-gradient-to-r ${colorClass} px-4 py-3 flex items-center gap-2`}>
-      {icon && <span style={{ fontSize: '1.4rem' }}>{icon}</span>}
+      {icon && <span style={{ fontSize: '1.3rem' }}>{icon}</span>}
       <h3
         className="font-display font-bold text-white"
-        style={{ fontSize: 'clamp(0.95rem, 1.4vw, 1.1rem)' }}
+        style={{ fontSize: 'clamp(0.88rem, 1.3vw, 1.05rem)' }}
       >
         {title}
       </h3>

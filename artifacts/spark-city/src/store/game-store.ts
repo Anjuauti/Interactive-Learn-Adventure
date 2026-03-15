@@ -7,7 +7,6 @@ interface GameState {
   voltMessage: string;
   levelComplete: boolean;
   
-  // Actions
   setLevel: (level: number) => void;
   nextLevel: () => void;
   addScore: (points: number) => void;
@@ -29,12 +28,12 @@ export const useGameStore = create<GameState>((set) => ({
   nextLevel: () => set((state) => ({ 
     currentLevel: state.currentLevel + 1,
     levelComplete: false,
-    score: state.score + 50 // Bonus for completing
+    score: state.score + 50
   })),
 
   addScore: (points) => set((state) => ({ score: Math.max(0, state.score + points) })),
   
-  addStar: () => set((state) => ({ stars: Math.min(3, state.stars + 1) })),
+  addStar: () => set((state) => ({ stars: Math.min(8, state.stars + 1) })),
   
   setVoltMessage: (msg) => set({ voltMessage: msg }),
   
